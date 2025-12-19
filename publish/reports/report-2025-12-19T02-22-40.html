@@ -1,0 +1,2783 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Goose Attack Report</title>
+    <style>
+        .container {
+            width: 1000px;
+            margin: 0 auto;
+            padding: 10px;
+            background: #173529;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .info span{
+            color: #b3c3bc;
+        }
+
+        table {
+            border-collapse: collapse;
+            text-align: center;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #cad9ea;
+            color: #666;
+            height: 30px;
+        }
+
+        thead th {
+            background-color: #cce8eb;
+            width: 100px;
+        }
+
+        tr:nth-child(odd) {
+            background: #fff;
+        }
+
+        tr:nth-child(even) {
+            background: #f5fafa;
+        }
+
+        .charts-container .chart {
+            width: 100%;
+            height: 350px;
+            margin-bottom: 30px;
+        }
+
+        .download {
+            float: right;
+        }
+
+        .download a {
+            color: #00ca5a;
+        }
+
+        .graph {
+            margin-bottom: 1em;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/echarts.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Goose Attack Report</h1>
+
+        <div class="info">
+            <p>Users: <span>7</span> </p>
+            <p>Target Host: <span>http://trustify:8080/</span></p>
+            <p><span><small><em>goose v0.18.0</em></small></span></p>
+            <h2>Plan overview</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Started</th>
+                            <th>Stopped</th>
+                            <th>Elapsed</th>
+                            <th>Users</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Increasing</td><td>25-12-19 02:17:09</td><td>25-12-19 02:17:16</td><td>00:00:07</td><td>0 &rarr; 7</td></tr><tr><td>Maintaining</td><td>25-12-19 02:17:16</td><td>25-12-19 02:22:17</td><td>00:05:01</td><td>7</td></tr><tr><td>Decreasing</td><td>25-12-19 02:22:17</td><td>25-12-19 02:22:36</td><td>00:00:19</td><td>0 &larr; 7</td></tr>
+                    </tbody>
+                </table>
+        </div>
+
+        <div class="requests">
+            <h2>Request Metrics</h2>
+
+            <div class="graph">
+                <div id="graph-rps" style="width: 1000px; height:500px; background: white;"></div>
+
+                <script type="text/javascript">
+                    var chartDom = document.getElementById('graph-rps');
+                    var myChart = echarts.init(chartDom);
+
+                    myChart.setOption({
+                        color: ['#2c664f', '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+                        tooltip: { trigger: 'axis' },
+                        toolbox: {
+                            feature: {
+                                dataZoom: { yAxisIndex: 'none' },
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        dataZoom: [
+                            {
+                                type: 'inside',
+                                start: 0,
+                                end: 100,
+                                fillerColor: 'rgba(34, 80, 61, 0.25)',
+                                selectedDataBackground: {
+                                    lineStyle: { color: '#2c664f' },
+                                    areaStyle: { color: '#378063' }
+                                }
+                            },
+                            {
+                                start: 0,
+                                end: 100,
+                                fillerColor: 'rgba(34, 80, 61, 0.25)',
+                                selectedDataBackground: {
+                                    lineStyle: { color: '#2c664f' },
+                                    areaStyle: { color: '#378063' }
+                                }
+                            },
+                        ],
+                        xAxis: { type: 'time' },
+                        yAxis: {
+                            name: 'Requests #',
+                            nameLocation: 'center',
+                            nameRotate: 90,
+                            nameGap: 45,
+                            type: 'value'
+                        },
+                        legend: {
+                            type: 'scroll',
+                            width: '75%',
+                            data: ["Total","DELETE delete_sbom_from_pool_sequential[100 SBOMs]","GET search_purls","GET search_exact_purl","GET search_advisory","GET list_vulnerabilities_paginated","GET list_vulnerabilities","GET list_sboms_paginated","GET list_sboms","GET list_products","GET list_packages_paginated","GET list_packages","GET list_organizations","GET list_importer","GET list_advisory_paginated","GET list_advisory_labels","GET list_advisory","GET get_sbom_advisories[sha256:87fd06bc…9d7b8304c0d2d9b2]","GET get_sbom[sha256:720e4451…a939656247164447]","GET get_analysis_status","GET get_analysis_latest_cpe","GET get_advisory_by_doc_id","POST post_vulnerability_analyze[pkg:rpm/redhat/…h=noarch&epoch=1]","POST get_recommendations[pkg:rpm/redhat/…e-metrics@2.13.8]","GET sbom_by_package[pkg:maven/io.qu…dhat.com%2fga%2f]","GET get_sbom_license_ids[urn:uuid:019731…104-331632a21144]","GET get_purl_details[b00df2ca-df21-5…874-304e9c54e2bd]","GET get_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]","GET download_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]","GET search_sboms_by_license","GET search_purls_by_license","GET search_licenses"],
+                        },
+                        series: [
+                            {
+                                name: 'Total',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                lineStyle: { color: '#2c664f' },
+                                areaStyle: { color: '#378063' },
+                                markArea: {
+                                    data: [
+                                        [
+                            {
+                                xAxis: '2025-12-19 02:17:09',
+                                itemStyle: { borderColor: 'rgba(44, 102, 79, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:09'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:17:09',
+                                itemStyle: { color: 'rgba(44, 102, 79, 0.05)' },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:16'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:17:16',
+                                itemStyle: { borderColor: 'rgba(44, 102, 79, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:16'
+                            }
+                        ],[
+                            {
+                                xAxis: '2025-12-19 02:22:17',
+                                itemStyle: { borderColor: 'rgba(179, 65, 65, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:17'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:22:17',
+                                itemStyle: { color: 'rgba(179, 65, 65, 0.05)' },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:36'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:22:36',
+                                itemStyle: { borderColor: 'rgba(179, 65, 65, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:36'
+                            }
+                        ],
+                                    ]
+                                },
+                                data: [["2025-12-19 02:17:09",9],["2025-12-19 02:17:10",13],["2025-12-19 02:17:11",11],["2025-12-19 02:17:12",11],["2025-12-19 02:17:14",1],["2025-12-19 02:17:15",7],["2025-12-19 02:17:16",5],["2025-12-19 02:17:21",15],["2025-12-19 02:17:22",5],["2025-12-19 02:17:23",15],["2025-12-19 02:17:24",1],["2025-12-19 02:17:33",1],["2025-12-19 02:17:34",1],["2025-12-19 02:17:35",1],["2025-12-19 02:17:36",1],["2025-12-19 02:17:37",3],["2025-12-19 02:17:42",2],["2025-12-19 02:17:43",1],["2025-12-19 02:17:44",2],["2025-12-19 02:17:53",1],["2025-12-19 02:18:03",1],["2025-12-19 02:18:11",1],["2025-12-19 02:18:20",1],["2025-12-19 02:18:29",1],["2025-12-19 02:18:37",1],["2025-12-19 02:18:40",8],["2025-12-19 02:18:41",2],["2025-12-19 02:18:45",2],["2025-12-19 02:18:48",4],["2025-12-19 02:18:49",2],["2025-12-19 02:18:50",15],["2025-12-19 02:18:51",7],["2025-12-19 02:18:52",12],["2025-12-19 02:18:53",10],["2025-12-19 02:18:54",11],["2025-12-19 02:18:55",14],["2025-12-19 02:18:56",6],["2025-12-19 02:19:00",1],["2025-12-19 02:19:06",9],["2025-12-19 02:19:07",8],["2025-12-19 02:19:08",3],["2025-12-19 02:19:09",3],["2025-12-19 02:19:10",10],["2025-12-19 02:19:14",3],["2025-12-19 02:19:16",1],["2025-12-19 02:19:20",1],["2025-12-19 02:19:21",1],["2025-12-19 02:19:22",1],["2025-12-19 02:19:23",1],["2025-12-19 02:19:25",1],["2025-12-19 02:19:27",1],["2025-12-19 02:19:29",2],["2025-12-19 02:19:30",1],["2025-12-19 02:19:31",1],["2025-12-19 02:19:32",2],["2025-12-19 02:19:39",1],["2025-12-19 02:19:47",1],["2025-12-19 02:19:52",1],["2025-12-19 02:19:55",1],["2025-12-19 02:20:03",1],["2025-12-19 02:20:10",1],["2025-12-19 02:20:18",1],["2025-12-19 02:20:26",11],["2025-12-19 02:20:33",1],["2025-12-19 02:20:34",3],["2025-12-19 02:20:35",16],["2025-12-19 02:20:36",9],["2025-12-19 02:20:37",18],["2025-12-19 02:20:38",4],["2025-12-19 02:20:39",4],["2025-12-19 02:20:40",19],["2025-12-19 02:20:41",7],["2025-12-19 02:20:43",1],["2025-12-19 02:20:50",1],["2025-12-19 02:20:53",19],["2025-12-19 02:20:55",1],["2025-12-19 02:20:59",1],["2025-12-19 02:21:00",8],["2025-12-19 02:21:01",1],["2025-12-19 02:21:06",1],["2025-12-19 02:21:08",2],["2025-12-19 02:21:09",1],["2025-12-19 02:21:12",1],["2025-12-19 02:21:13",1],["2025-12-19 02:21:14",4],["2025-12-19 02:21:15",2],["2025-12-19 02:21:18",1],["2025-12-19 02:21:20",1],["2025-12-19 02:21:24",3],["2025-12-19 02:21:25",1],["2025-12-19 02:21:27",1],["2025-12-19 02:21:32",1],["2025-12-19 02:21:39",1],["2025-12-19 02:21:47",1],["2025-12-19 02:21:55",1],["2025-12-19 02:22:03",1],["2025-12-19 02:22:11",1]],
+                            },
+                            {
+                                name: 'DELETE delete_sbom_from_pool_sequential[100 SBOMs]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:16",1],["2025-12-19 02:17:24",1],["2025-12-19 02:17:34",1],["2025-12-19 02:17:44",1],["2025-12-19 02:17:53",1],["2025-12-19 02:18:03",1],["2025-12-19 02:18:11",1],["2025-12-19 02:18:20",1],["2025-12-19 02:18:29",1],["2025-12-19 02:18:37",1],["2025-12-19 02:18:45",1],["2025-12-19 02:18:53",1],["2025-12-19 02:19:00",1],["2025-12-19 02:19:08",1],["2025-12-19 02:19:16",1],["2025-12-19 02:19:23",1],["2025-12-19 02:19:31",1],["2025-12-19 02:19:39",1],["2025-12-19 02:19:47",1],["2025-12-19 02:19:55",1],["2025-12-19 02:20:03",1],["2025-12-19 02:20:10",1],["2025-12-19 02:20:18",1],["2025-12-19 02:20:26",1],["2025-12-19 02:20:35",1],["2025-12-19 02:20:43",1],["2025-12-19 02:20:50",1],["2025-12-19 02:20:59",1],["2025-12-19 02:21:06",1],["2025-12-19 02:21:15",1],["2025-12-19 02:21:24",1],["2025-12-19 02:21:32",1],["2025-12-19 02:21:39",1],["2025-12-19 02:21:47",1],["2025-12-19 02:21:55",1],["2025-12-19 02:22:03",1],["2025-12-19 02:22:11",1]],
+                            },
+                        {
+                                name: 'GET search_purls',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:10",2],["2025-12-19 02:17:11",1],["2025-12-19 02:17:12",1],["2025-12-19 02:17:16",1],["2025-12-19 02:18:55",1],["2025-12-19 02:18:56",4],["2025-12-19 02:20:41",5]],
+                            },
+                        {
+                                name: 'GET search_exact_purl',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:21",5],["2025-12-19 02:19:06",4],["2025-12-19 02:19:07",1],["2025-12-19 02:20:53",5]],
+                            },
+                        {
+                                name: 'GET search_advisory',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",1],["2025-12-19 02:17:10",1],["2025-12-19 02:17:11",1],["2025-12-19 02:17:12",1],["2025-12-19 02:17:15",1],["2025-12-19 02:18:52",3],["2025-12-19 02:18:53",1],["2025-12-19 02:18:54",1],["2025-12-19 02:20:37",3],["2025-12-19 02:20:38",2]],
+                            },
+                        {
+                                name: 'GET list_vulnerabilities_paginated',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",1],["2025-12-19 02:17:10",1],["2025-12-19 02:17:11",1],["2025-12-19 02:17:12",1],["2025-12-19 02:17:15",1],["2025-12-19 02:18:54",5],["2025-12-19 02:20:40",5]],
+                            },
+                        {
+                                name: 'GET list_vulnerabilities',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",1],["2025-12-19 02:17:10",1],["2025-12-19 02:17:11",1],["2025-12-19 02:17:12",1],["2025-12-19 02:17:15",1],["2025-12-19 02:18:53",1],["2025-12-19 02:18:54",4],["2025-12-19 02:20:39",4],["2025-12-19 02:20:40",1]],
+                            },
+                        {
+                                name: 'GET list_sboms_paginated',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:22",5],["2025-12-19 02:19:07",2],["2025-12-19 02:19:08",2],["2025-12-19 02:19:09",1],["2025-12-19 02:20:53",4],["2025-12-19 02:20:55",1]],
+                            },
+                        {
+                                name: 'GET list_sboms',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:21",5],["2025-12-19 02:19:06",2],["2025-12-19 02:19:07",3],["2025-12-19 02:20:53",5]],
+                            },
+                        {
+                                name: 'GET list_products',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:21",5],["2025-12-19 02:19:06",3],["2025-12-19 02:19:07",2],["2025-12-19 02:20:53",5]],
+                            },
+                        {
+                                name: 'GET list_packages_paginated',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:10",2],["2025-12-19 02:17:11",1],["2025-12-19 02:17:12",1],["2025-12-19 02:17:16",1],["2025-12-19 02:18:55",3],["2025-12-19 02:18:56",2],["2025-12-19 02:20:40",3],["2025-12-19 02:20:41",2]],
+                            },
+                        {
+                                name: 'GET list_packages',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",1],["2025-12-19 02:17:10",1],["2025-12-19 02:17:11",1],["2025-12-19 02:17:12",1],["2025-12-19 02:17:16",1],["2025-12-19 02:18:55",5],["2025-12-19 02:20:40",5]],
+                            },
+                        {
+                                name: 'GET list_organizations',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",1],["2025-12-19 02:17:10",1],["2025-12-19 02:17:11",1],["2025-12-19 02:17:12",1],["2025-12-19 02:17:15",1],["2025-12-19 02:18:50",3],["2025-12-19 02:18:51",1],["2025-12-19 02:18:53",1],["2025-12-19 02:20:35",3],["2025-12-19 02:20:36",1],["2025-12-19 02:20:37",1]],
+                            },
+                        {
+                                name: 'GET list_importer',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",1],["2025-12-19 02:17:10",1],["2025-12-19 02:17:11",1],["2025-12-19 02:17:12",1],["2025-12-19 02:17:16",1],["2025-12-19 02:18:55",5],["2025-12-19 02:20:40",5]],
+                            },
+                        {
+                                name: 'GET list_advisory_paginated',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",1],["2025-12-19 02:17:10",1],["2025-12-19 02:17:11",1],["2025-12-19 02:17:12",1],["2025-12-19 02:17:15",1],["2025-12-19 02:18:52",4],["2025-12-19 02:18:53",1],["2025-12-19 02:20:37",4],["2025-12-19 02:20:38",1]],
+                            },
+                        {
+                                name: 'GET list_advisory_labels',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:23",5],["2025-12-19 02:19:10",4],["2025-12-19 02:19:14",1],["2025-12-19 02:21:00",2],["2025-12-19 02:21:01",1],["2025-12-19 02:21:09",1],["2025-12-19 02:21:15",1]],
+                            },
+                        {
+                                name: 'GET list_advisory',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",1],["2025-12-19 02:17:10",1],["2025-12-19 02:17:11",1],["2025-12-19 02:17:12",1],["2025-12-19 02:17:15",1],["2025-12-19 02:18:50",3],["2025-12-19 02:18:51",1],["2025-12-19 02:18:53",1],["2025-12-19 02:20:35",1],["2025-12-19 02:20:36",3],["2025-12-19 02:20:37",1]],
+                            },
+                        {
+                                name: 'GET get_sbom_advisories[sha256:87fd06bc…9d7b8304c0d2d9b2]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:37",3],["2025-12-19 02:17:42",1],["2025-12-19 02:17:44",1],["2025-12-19 02:19:22",1],["2025-12-19 02:19:25",1],["2025-12-19 02:19:29",1],["2025-12-19 02:19:32",2],["2025-12-19 02:21:14",2],["2025-12-19 02:21:24",2],["2025-12-19 02:21:27",1]],
+                            },
+                        {
+                                name: 'GET get_sbom[sha256:720e4451…a939656247164447]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:33",1],["2025-12-19 02:17:35",1],["2025-12-19 02:17:36",1],["2025-12-19 02:17:42",1],["2025-12-19 02:17:43",1],["2025-12-19 02:19:20",1],["2025-12-19 02:19:21",1],["2025-12-19 02:19:27",1],["2025-12-19 02:19:29",1],["2025-12-19 02:19:30",1],["2025-12-19 02:21:12",1],["2025-12-19 02:21:13",1],["2025-12-19 02:21:18",1],["2025-12-19 02:21:20",1],["2025-12-19 02:21:25",1]],
+                            },
+                        {
+                                name: 'GET get_analysis_status',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:23",5],["2025-12-19 02:19:09",1],["2025-12-19 02:19:10",3],["2025-12-19 02:19:14",1],["2025-12-19 02:21:00",3],["2025-12-19 02:21:08",1],["2025-12-19 02:21:14",1]],
+                            },
+                        {
+                                name: 'GET get_analysis_latest_cpe',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:23",5],["2025-12-19 02:19:09",1],["2025-12-19 02:19:10",3],["2025-12-19 02:19:14",1],["2025-12-19 02:21:00",3],["2025-12-19 02:21:08",1],["2025-12-19 02:21:14",1]],
+                            },
+                        {
+                                name: 'GET get_advisory_by_doc_id',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",1],["2025-12-19 02:17:10",1],["2025-12-19 02:17:11",1],["2025-12-19 02:17:12",1],["2025-12-19 02:17:15",1],["2025-12-19 02:18:52",3],["2025-12-19 02:18:53",1],["2025-12-19 02:18:54",1],["2025-12-19 02:20:37",4],["2025-12-19 02:20:38",1]],
+                            },
+                        {
+                                name: 'POST post_vulnerability_analyze[pkg:rpm/redhat/…h=noarch&epoch=1]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:48",2],["2025-12-19 02:18:49",1],["2025-12-19 02:18:51",1],["2025-12-19 02:18:52",1],["2025-12-19 02:20:33",1],["2025-12-19 02:20:34",2],["2025-12-19 02:20:36",1],["2025-12-19 02:20:37",1]],
+                            },
+                        {
+                                name: 'POST get_recommendations[pkg:rpm/redhat/…e-metrics@2.13.8]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:50",3],["2025-12-19 02:18:51",1],["2025-12-19 02:18:53",1],["2025-12-19 02:20:35",3],["2025-12-19 02:20:36",1],["2025-12-19 02:20:37",1]],
+                            },
+                        {
+                                name: 'GET sbom_by_package[pkg:maven/io.qu…dhat.com%2fga%2f]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:40",4],["2025-12-19 02:18:41",1],["2025-12-19 02:20:26",5]],
+                            },
+                        {
+                                name: 'GET get_sbom_license_ids[urn:uuid:019731…104-331632a21144]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:40",4],["2025-12-19 02:18:41",1],["2025-12-19 02:20:26",5]],
+                            },
+                        {
+                                name: 'GET get_purl_details[b00df2ca-df21-5…874-304e9c54e2bd]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:48",2],["2025-12-19 02:18:49",1],["2025-12-19 02:18:51",1],["2025-12-19 02:18:52",1],["2025-12-19 02:20:34",1],["2025-12-19 02:20:35",2],["2025-12-19 02:20:36",1],["2025-12-19 02:20:37",1]],
+                            },
+                        {
+                                name: 'GET get_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:50",3],["2025-12-19 02:18:51",1],["2025-12-19 02:18:53",1],["2025-12-19 02:20:35",3],["2025-12-19 02:20:36",1],["2025-12-19 02:20:37",1]],
+                            },
+                        {
+                                name: 'GET download_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:50",3],["2025-12-19 02:18:51",1],["2025-12-19 02:18:53",1],["2025-12-19 02:20:35",3],["2025-12-19 02:20:36",1],["2025-12-19 02:20:37",1]],
+                            },
+                        {
+                                name: 'GET search_sboms_by_license',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:45",1]],
+                            },
+                        {
+                                name: 'GET search_purls_by_license',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:19:52",1]],
+                            },
+                        {
+                                name: 'GET search_licenses',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:14",1]],
+                            },
+                        
+                        ]
+                    });
+                </script>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Name</th>
+                        <th># Requests</th>
+                        <th># Fails</th>
+                        <th>Average (ms)</th>
+                        <th>Min (ms)</th>
+                        <th>Max (ms)</th>
+                        <th>RPS</th>
+                        <th>Failures/s</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+        <td>DELETE</td>
+        <td>delete_sbom_from_pool_sequential[100 SBOMs]</td>
+        <td>37 (-1)</td>
+        <td>0</td>
+        <td>1036.51 (+59.62)</td>
+        <td>146 (-28)</td>
+        <td>3102 (+562)</td>
+        <td>0.12 (-0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>download_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]</td>
+        <td>10 (0)</td>
+        <td>10</td>
+        <td>5.50 (-16.00)</td>
+        <td>1 (-1)</td>
+        <td>18 (-42)</td>
+        <td>0.03 (+0.00)</td>
+        <td>0.03 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>get_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]</td>
+        <td>10 (0)</td>
+        <td>10</td>
+        <td>10.90 (-17.50)</td>
+        <td>1 (-1)</td>
+        <td>47 (-88)</td>
+        <td>0.03 (+0.00)</td>
+        <td>0.03 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>get_advisory_by_doc_id</td>
+        <td>10 (0)</td>
+        <td>0</td>
+        <td>12.80 (-56.00)</td>
+        <td>3 (-1)</td>
+        <td>56 (-102)</td>
+        <td>0.03 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>get_analysis_latest_cpe</td>
+        <td>15 (0)</td>
+        <td>0</td>
+        <td>266.53 (+9.53)</td>
+        <td>92 (-38)</td>
+        <td>485 (-7)</td>
+        <td>0.05 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>get_analysis_status</td>
+        <td>15 (0)</td>
+        <td>0</td>
+        <td>10.40 (+1.67)</td>
+        <td>1 (-1)</td>
+        <td>58 (+2)</td>
+        <td>0.05 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>get_purl_details[b00df2ca-df21-5…874-304e9c54e2bd]</td>
+        <td>10 (0)</td>
+        <td>0</td>
+        <td>704.60 (-204.00)</td>
+        <td>82 (-96)</td>
+        <td>1494 (-110)</td>
+        <td>0.03 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>get_sbom[sha256:720e4451…a939656247164447]</td>
+        <td>15 (0)</td>
+        <td>0</td>
+        <td>2429.60 (+1019.60)</td>
+        <td>508 (+204)</td>
+        <td>5469 (+1939)</td>
+        <td>0.05 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>get_sbom_advisories[sha256:87fd06bc…9d7b8304c0d2d9b2]</td>
+        <td>15 (0)</td>
+        <td>0</td>
+        <td>58321.54 (-2381.33)</td>
+        <td>50134 (-1077)</td>
+        <td>63887 (-2861)</td>
+        <td>0.05 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>get_sbom_license_ids[urn:uuid:019731…104-331632a21144]</td>
+        <td>10 (0)</td>
+        <td>0</td>
+        <td>9186.30 (+10.90)</td>
+        <td>7414 (+15)</td>
+        <td>11205 (-233)</td>
+        <td>0.03 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>list_advisory</td>
+        <td>10 (0)</td>
+        <td>0</td>
+        <td>1022.30 (+51.20)</td>
+        <td>301 (-56)</td>
+        <td>1435 (-646)</td>
+        <td>0.03 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>list_advisory_labels</td>
+        <td>15 (0)</td>
+        <td>0</td>
+        <td>14051.87 (-1006.93)</td>
+        <td>9801 (-1267)</td>
+        <td>19869 (-420)</td>
+        <td>0.05 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>list_advisory_paginated</td>
+        <td>10 (0)</td>
+        <td>0</td>
+        <td>574.20 (-33.70)</td>
+        <td>204 (-148)</td>
+        <td>799 (+77)</td>
+        <td>0.03 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>list_importer</td>
+        <td>11 (0)</td>
+        <td>0</td>
+        <td>9.55 (-8.82)</td>
+        <td>2 (0)</td>
+        <td>40 (-5)</td>
+        <td>0.04 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>list_organizations</td>
+        <td>10 (0)</td>
+        <td>0</td>
+        <td>22.90 (+0.40)</td>
+        <td>1 (-4)</td>
+        <td>61 (+11)</td>
+        <td>0.03 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>list_packages</td>
+        <td>11 (0)</td>
+        <td>0</td>
+        <td>567.82 (+63.82)</td>
+        <td>273 (+151)</td>
+        <td>1044 (-2)</td>
+        <td>0.04 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>list_packages_paginated</td>
+        <td>11 (0)</td>
+        <td>0</td>
+        <td>411.91 (-7.55)</td>
+        <td>199 (+31)</td>
+        <td>571 (-34)</td>
+        <td>0.04 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>list_products</td>
+        <td>15 (0)</td>
+        <td>0</td>
+        <td>13.87 (-4.00)</td>
+        <td>3 (-1)</td>
+        <td>62 (+3)</td>
+        <td>0.05 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>list_sboms</td>
+        <td>15 (0)</td>
+        <td>0</td>
+        <td>1009.73 (-284.40)</td>
+        <td>655 (+40)</td>
+        <td>2189 (-1315)</td>
+        <td>0.05 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>list_sboms_paginated</td>
+        <td>15 (0)</td>
+        <td>0</td>
+        <td>4736.40 (+3301.87)</td>
+        <td>753 (+466)</td>
+        <td>19505 (+16439)</td>
+        <td>0.05 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>list_vulnerabilities</td>
+        <td>10 (-1)</td>
+        <td>0</td>
+        <td>397.60 (+45.42)</td>
+        <td>192 (+71)</td>
+        <td>912 (+302)</td>
+        <td>0.03 (-0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>list_vulnerabilities_paginated</td>
+        <td>11 (0)</td>
+        <td>0</td>
+        <td>227.00 (+3.64)</td>
+        <td>90 (+3)</td>
+        <td>279 (-31)</td>
+        <td>0.04 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>sbom_by_package[pkg:maven/io.qu…dhat.com%2fga%2f]</td>
+        <td>10 (0)</td>
+        <td>0</td>
+        <td>19.80 (-67.00)</td>
+        <td>8 (+3)</td>
+        <td>47 (-204)</td>
+        <td>0.03 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>search_advisory</td>
+        <td>10 (0)</td>
+        <td>0</td>
+        <td>1566.10 (-48.60)</td>
+        <td>491 (+46)</td>
+        <td>2164 (-979)</td>
+        <td>0.03 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>search_exact_purl</td>
+        <td>15 (0)</td>
+        <td>0</td>
+        <td>10.07 (-15.93)</td>
+        <td>2 (-2)</td>
+        <td>48 (-21)</td>
+        <td>0.05 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>search_licenses</td>
+        <td>1 (0)</td>
+        <td>0</td>
+        <td>91392.00 (-809.00)</td>
+        <td>91392 (-809)</td>
+        <td>91392 (-809)</td>
+        <td>0.00 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>search_purls</td>
+        <td>15 (0)</td>
+        <td>0</td>
+        <td>10633.53 (-6895.67)</td>
+        <td>5231 (-5273)</td>
+        <td>11788 (-13905)</td>
+        <td>0.05 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>search_purls_by_license</td>
+        <td>1 (0)</td>
+        <td>0</td>
+        <td>162789.00 (+3177.00)</td>
+        <td>162789 (+3177)</td>
+        <td>162789 (+3177)</td>
+        <td>0.00 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td>search_sboms_by_license</td>
+        <td>1 (0)</td>
+        <td>0</td>
+        <td>67494.00 (-9803.00)</td>
+        <td>67494 (-9803)</td>
+        <td>67494 (-9803)</td>
+        <td>0.00 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>POST</td>
+        <td>get_recommendations[pkg:rpm/redhat/…e-metrics@2.13.8]</td>
+        <td>10 (0)</td>
+        <td>0</td>
+        <td>119.30 (+97.40)</td>
+        <td>7 (+2)</td>
+        <td>217 (+158)</td>
+        <td>0.03 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td>POST</td>
+        <td>post_vulnerability_analyze[pkg:rpm/redhat/…h=noarch&epoch=1]</td>
+        <td>10 (0)</td>
+        <td>0</td>
+        <td>405.50 (-54.60)</td>
+        <td>32 (-57)</td>
+        <td>1027 (+216)</td>
+        <td>0.03 (+0.00)</td>
+        <td>0.00 (+0.00)</td>
+    </tr>
+<tr>
+        <td></td>
+        <td>Aggregated</td>
+        <td>364 (-2)</td>
+        <td>20</td>
+        <td>5181.69 (-252.43)</td>
+        <td>1 (-1)</td>
+        <td>162789 (+3177)</td>
+        <td>1.21 (-0.01)</td>
+        <td>0.07 (+0.00)</td>
+    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        
+
+        <div class="responses">
+            <h2>Response Time Metrics</h2>
+
+            <div class="graph">
+                <div id="graph-avg-response-time" style="width: 1000px; height:500px; background: white;"></div>
+
+                <script type="text/javascript">
+                    var chartDom = document.getElementById('graph-avg-response-time');
+                    var myChart = echarts.init(chartDom);
+
+                    myChart.setOption({
+                        color: ['#2c664f', '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+                        tooltip: { trigger: 'axis' },
+                        toolbox: {
+                            feature: {
+                                dataZoom: { yAxisIndex: 'none' },
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        dataZoom: [
+                            {
+                                type: 'inside',
+                                start: 0,
+                                end: 100,
+                                fillerColor: 'rgba(34, 80, 61, 0.25)',
+                                selectedDataBackground: {
+                                    lineStyle: { color: '#2c664f' },
+                                    areaStyle: { color: '#378063' }
+                                }
+                            },
+                            {
+                                start: 0,
+                                end: 100,
+                                fillerColor: 'rgba(34, 80, 61, 0.25)',
+                                selectedDataBackground: {
+                                    lineStyle: { color: '#2c664f' },
+                                    areaStyle: { color: '#378063' }
+                                }
+                            },
+                        ],
+                        xAxis: { type: 'time' },
+                        yAxis: {
+                            name: 'Response time [ms]',
+                            nameLocation: 'center',
+                            nameRotate: 90,
+                            nameGap: 45,
+                            type: 'value'
+                        },
+                        legend: {
+                            type: 'scroll',
+                            width: '75%',
+                            data: ["Total","GET search_purls_by_license","GET search_licenses","GET search_sboms_by_license","GET get_sbom_advisories[sha256:87fd06bc…9d7b8304c0d2d9b2]","GET list_advisory_labels","GET search_purls","GET get_sbom_license_ids[urn:uuid:019731…104-331632a21144]","GET list_sboms_paginated","GET get_sbom[sha256:720e4451…a939656247164447]","GET search_advisory","DELETE delete_sbom_from_pool_sequential[100 SBOMs]","GET list_sboms","GET list_advisory","GET get_purl_details[b00df2ca-df21-5…874-304e9c54e2bd]","GET list_packages","GET list_advisory_paginated","POST post_vulnerability_analyze[pkg:rpm/redhat/…h=noarch&epoch=1]","GET list_packages_paginated","GET list_vulnerabilities","GET get_analysis_latest_cpe","GET list_vulnerabilities_paginated","POST get_recommendations[pkg:rpm/redhat/…e-metrics@2.13.8]","GET sbom_by_package[pkg:maven/io.qu…dhat.com%2fga%2f]","GET list_organizations","GET list_products","GET get_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]","GET get_advisory_by_doc_id","GET get_analysis_status","GET search_exact_purl","GET list_importer","GET download_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]"],
+                        },
+                        series: [
+                            {
+                                name: 'Total',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                lineStyle: { color: '#2c664f' },
+                                areaStyle: { color: '#378063' },
+                                markArea: {
+                                    data: [
+                                        [
+                            {
+                                xAxis: '2025-12-19 02:17:09',
+                                itemStyle: { borderColor: 'rgba(44, 102, 79, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:09'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:17:09',
+                                itemStyle: { color: 'rgba(44, 102, 79, 0.05)' },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:16'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:17:16',
+                                itemStyle: { borderColor: 'rgba(44, 102, 79, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:16'
+                            }
+                        ],[
+                            {
+                                xAxis: '2025-12-19 02:22:17',
+                                itemStyle: { borderColor: 'rgba(179, 65, 65, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:17'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:22:17',
+                                itemStyle: { color: 'rgba(179, 65, 65, 0.05)' },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:36'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:22:36',
+                                itemStyle: { borderColor: 'rgba(179, 65, 65, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:36'
+                            }
+                        ],
+                                    ]
+                                },
+                                data: [["2025-12-19 02:17:09",105.66667175292969],["2025-12-19 02:17:10",1801.6153564453125],["2025-12-19 02:17:11",973.8182373046875],["2025-12-19 02:17:12",883.0909423828125],["2025-12-19 02:17:14",91392.0],["2025-12-19 02:17:15",143.14285278320312],["2025-12-19 02:17:16",1474.8001708984375],["2025-12-19 02:17:21",239.4666748046875],["2025-12-19 02:17:22",755.5999755859375],["2025-12-19 02:17:23",4936.60009765625],["2025-12-19 02:17:24",3102.0],["2025-12-19 02:17:33",4394.0],["2025-12-19 02:17:34",1704.0],["2025-12-19 02:17:35",2612.0],["2025-12-19 02:17:36",1188.0],["2025-12-19 02:17:37",63163.33203125],["2025-12-19 02:17:42",29159.5],["2025-12-19 02:17:43",814.0],["2025-12-19 02:17:44",29470.0],["2025-12-19 02:17:53",2301.0],["2025-12-19 02:18:03",1532.0],["2025-12-19 02:18:11",1494.0],["2025-12-19 02:18:20",1681.0],["2025-12-19 02:18:29",1091.0],["2025-12-19 02:18:37",1034.0],["2025-12-19 02:18:40",4330.5],["2025-12-19 02:18:41",5607.5],["2025-12-19 02:18:45",34280.0],["2025-12-19 02:18:48",1198.5],["2025-12-19 02:18:49",398.5],["2025-12-19 02:18:50",335.79998779296875],["2025-12-19 02:18:51",209.0],["2025-12-19 02:18:52",654.0],["2025-12-19 02:18:53",301.70001220703125],["2025-12-19 02:18:54",267.0],["2025-12-19 02:18:55",1132.357177734375],["2025-12-19 02:18:56",7251.83349609375],["2025-12-19 02:19:00",328.0],["2025-12-19 02:19:06",365.8888854980469],["2025-12-19 02:19:07",1420.875],["2025-12-19 02:19:08",1629.0],["2025-12-19 02:19:09",506.3333435058594],["2025-12-19 02:19:10",6072.49951171875],["2025-12-19 02:19:14",4599.0],["2025-12-19 02:19:16",365.0],["2025-12-19 02:19:20",4681.0],["2025-12-19 02:19:21",1375.0],["2025-12-19 02:19:22",63587.0],["2025-12-19 02:19:23",1328.0],["2025-12-19 02:19:25",60590.0],["2025-12-19 02:19:27",1965.0],["2025-12-19 02:19:29",29634.0],["2025-12-19 02:19:30",2503.0],["2025-12-19 02:19:31",891.0],["2025-12-19 02:19:32",53701.0],["2025-12-19 02:19:39",423.0],["2025-12-19 02:19:47",729.0],["2025-12-19 02:19:52",162789.0],["2025-12-19 02:19:55",667.0],["2025-12-19 02:20:03",1067.0],["2025-12-19 02:20:10",704.0],["2025-12-19 02:20:18",897.0],["2025-12-19 02:20:26",4333.90966796875],["2025-12-19 02:20:33",1027.0],["2025-12-19 02:20:34",522.6666870117188],["2025-12-19 02:20:35",231.3125],["2025-12-19 02:20:36",348.3333435058594],["2025-12-19 02:20:37",528.8333740234375],["2025-12-19 02:20:38",879.75],["2025-12-19 02:20:39",395.0],["2025-12-19 02:20:40",290.4210510253906],["2025-12-19 02:20:41",8457.4296875],["2025-12-19 02:20:43",684.0],["2025-12-19 02:20:50",1495.0],["2025-12-19 02:20:53",2090.262939453125],["2025-12-19 02:20:55",19505.0],["2025-12-19 02:20:59",740.0],["2025-12-19 02:21:00",3177.75],["2025-12-19 02:21:01",17832.0],["2025-12-19 02:21:06",1049.0],["2025-12-19 02:21:08",213.5],["2025-12-19 02:21:09",11664.0],["2025-12-19 02:21:12",2032.0],["2025-12-19 02:21:13",986.0],["2025-12-19 02:21:14",31622.25],["2025-12-19 02:21:15",5509.0],["2025-12-19 02:21:18",5469.0],["2025-12-19 02:21:20",3316.0],["2025-12-19 02:21:24",35678.0],["2025-12-19 02:21:25",1700.0],["2025-12-19 02:21:27",50134.0],["2025-12-19 02:21:32",548.0],["2025-12-19 02:21:39",728.0],["2025-12-19 02:21:47",639.0],["2025-12-19 02:21:55",858.0],["2025-12-19 02:22:03",842.0],["2025-12-19 02:22:11",530.0]],
+                            },
+                            {
+                                name: 'GET search_purls_by_license',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:19:52",162789.0]],
+                            },
+                        {
+                                name: 'GET search_licenses',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:14",91392.0]],
+                            },
+                        {
+                                name: 'GET search_sboms_by_license',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:45",67494.0]],
+                            },
+                        {
+                                name: 'GET get_sbom_advisories[sha256:87fd06bc…9d7b8304c0d2d9b2]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:37",63163.33203125],["2025-12-19 02:17:42",57811.0],["2025-12-19 02:17:44",56743.0],["2025-12-19 02:19:22",63587.0],["2025-12-19 02:19:25",60590.0],["2025-12-19 02:19:29",56367.0],["2025-12-19 02:19:32",53701.0],["2025-12-19 02:21:14",63004.0],["2025-12-19 02:21:24",53345.5],["2025-12-19 02:21:27",50134.0]],
+                            },
+                        {
+                                name: 'GET list_advisory_labels',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:23",14588.2001953125],["2025-12-19 02:19:10",15053.5],["2025-12-19 02:19:14",13616.0],["2025-12-19 02:21:00",12139.0],["2025-12-19 02:21:01",17832.0],["2025-12-19 02:21:09",11664.0],["2025-12-19 02:21:15",10233.0]],
+                            },
+                        {
+                                name: 'GET search_purls',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:10",11331.0],["2025-12-19 02:17:11",10195.0],["2025-12-19 02:17:12",9187.0],["2025-12-19 02:17:16",5231.0],["2025-12-19 02:18:55",11020.0],["2025-12-19 02:18:56",10727.75],["2025-12-19 02:20:41",11659.400390625]],
+                            },
+                        {
+                                name: 'GET get_sbom_license_ids[urn:uuid:019731…104-331632a21144]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:40",8636.5],["2025-12-19 02:18:41",11205.0],["2025-12-19 02:20:26",9222.400390625]],
+                            },
+                        {
+                                name: 'GET list_sboms_paginated',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:22",755.5999755859375],["2025-12-19 02:19:07",4062.5],["2025-12-19 02:19:08",2042.0],["2025-12-19 02:19:09",1217.0],["2025-12-19 02:20:53",8584.25],["2025-12-19 02:20:55",19505.0]],
+                            },
+                        {
+                                name: 'GET get_sbom[sha256:720e4451…a939656247164447]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:33",4394.0],["2025-12-19 02:17:35",2612.0],["2025-12-19 02:17:36",1188.0],["2025-12-19 02:17:42",508.0],["2025-12-19 02:17:43",814.0],["2025-12-19 02:19:20",4681.0],["2025-12-19 02:19:21",1375.0],["2025-12-19 02:19:27",1965.0],["2025-12-19 02:19:29",2901.0],["2025-12-19 02:19:30",2503.0],["2025-12-19 02:21:12",2032.0],["2025-12-19 02:21:13",986.0],["2025-12-19 02:21:18",5469.0],["2025-12-19 02:21:20",3316.0],["2025-12-19 02:21:25",1700.0]],
+                            },
+                        {
+                                name: 'GET search_advisory',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",282.0],["2025-12-19 02:17:10",167.0],["2025-12-19 02:17:11",125.0],["2025-12-19 02:17:12",131.0],["2025-12-19 02:17:15",308.0],["2025-12-19 02:18:52",1638.6666259765625],["2025-12-19 02:18:53",868.0],["2025-12-19 02:18:54",491.0],["2025-12-19 02:20:37",2024.6666259765625],["2025-12-19 02:20:38",1656.0]],
+                            },
+                        {
+                                name: 'DELETE delete_sbom_from_pool_sequential[100 SBOMs]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:16",1669.0],["2025-12-19 02:17:24",3102.0],["2025-12-19 02:17:34",1704.0],["2025-12-19 02:17:44",2197.0],["2025-12-19 02:17:53",2301.0],["2025-12-19 02:18:03",1532.0],["2025-12-19 02:18:11",1494.0],["2025-12-19 02:18:20",1681.0],["2025-12-19 02:18:29",1091.0],["2025-12-19 02:18:37",1034.0],["2025-12-19 02:18:45",1066.0],["2025-12-19 02:18:53",146.0],["2025-12-19 02:19:00",328.0],["2025-12-19 02:19:08",803.0],["2025-12-19 02:19:16",365.0],["2025-12-19 02:19:23",1328.0],["2025-12-19 02:19:31",891.0],["2025-12-19 02:19:39",423.0],["2025-12-19 02:19:47",729.0],["2025-12-19 02:19:55",667.0],["2025-12-19 02:20:03",1067.0],["2025-12-19 02:20:10",704.0],["2025-12-19 02:20:18",897.0],["2025-12-19 02:20:26",1471.0],["2025-12-19 02:20:35",420.0],["2025-12-19 02:20:43",684.0],["2025-12-19 02:20:50",1495.0],["2025-12-19 02:20:59",740.0],["2025-12-19 02:21:06",1049.0],["2025-12-19 02:21:15",785.0],["2025-12-19 02:21:24",343.0],["2025-12-19 02:21:32",548.0],["2025-12-19 02:21:39",728.0],["2025-12-19 02:21:47",639.0],["2025-12-19 02:21:55",858.0],["2025-12-19 02:22:03",842.0],["2025-12-19 02:22:11",530.0]],
+                            },
+                        {
+                                name: 'GET list_sboms',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:21",693.0],["2025-12-19 02:19:06",1569.5],["2025-12-19 02:19:07",1077.6666259765625],["2025-12-19 02:20:53",1061.800048828125]],
+                            },
+                        {
+                                name: 'GET list_advisory',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",189.0],["2025-12-19 02:17:10",169.0],["2025-12-19 02:17:11",105.0],["2025-12-19 02:17:12",97.0],["2025-12-19 02:17:15",218.0],["2025-12-19 02:18:50",1400.0],["2025-12-19 02:18:51",958.0],["2025-12-19 02:18:53",474.0],["2025-12-19 02:20:35",1286.0],["2025-12-19 02:20:36",1001.3333129882812],["2025-12-19 02:20:37",301.0]],
+                            },
+                        {
+                                name: 'GET get_purl_details[b00df2ca-df21-5…874-304e9c54e2bd]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:48",1489.0],["2025-12-19 02:18:49",699.0],["2025-12-19 02:18:51",310.0],["2025-12-19 02:18:52",211.0],["2025-12-19 02:20:34",1102.0],["2025-12-19 02:20:35",674.5],["2025-12-19 02:20:36",82.0],["2025-12-19 02:20:37",315.0]],
+                            },
+                        {
+                                name: 'GET list_packages',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",73.0],["2025-12-19 02:17:10",72.0],["2025-12-19 02:17:11",54.0],["2025-12-19 02:17:12",57.0],["2025-12-19 02:17:16",273.0],["2025-12-19 02:18:55",674.5999755859375],["2025-12-19 02:20:40",520.0]],
+                            },
+                        {
+                                name: 'GET list_advisory_paginated',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",98.0],["2025-12-19 02:17:10",99.0],["2025-12-19 02:17:11",88.0],["2025-12-19 02:17:12",90.0],["2025-12-19 02:17:15",271.0],["2025-12-19 02:18:52",629.5],["2025-12-19 02:18:53",602.0],["2025-12-19 02:20:37",604.5],["2025-12-19 02:20:38",204.0]],
+                            },
+                        {
+                                name: 'POST post_vulnerability_analyze[pkg:rpm/redhat/…h=noarch&epoch=1]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:48",908.0],["2025-12-19 02:18:49",98.0],["2025-12-19 02:18:51",173.0],["2025-12-19 02:18:52",173.0],["2025-12-19 02:20:33",1027.0],["2025-12-19 02:20:34",233.0],["2025-12-19 02:20:36",32.0],["2025-12-19 02:20:37",270.0]],
+                            },
+                        {
+                                name: 'GET list_packages_paginated',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:10",88.5],["2025-12-19 02:17:11",76.0],["2025-12-19 02:17:12",76.0],["2025-12-19 02:17:16",199.0],["2025-12-19 02:18:55",458.0],["2025-12-19 02:18:56",300.0],["2025-12-19 02:20:40",484.3333435058594],["2025-12-19 02:20:41",452.5]],
+                            },
+                        {
+                                name: 'GET list_vulnerabilities',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",200.0],["2025-12-19 02:17:10",36.0],["2025-12-19 02:17:11",37.0],["2025-12-19 02:17:12",41.0],["2025-12-19 02:17:15",105.0],["2025-12-19 02:18:53",912.0],["2025-12-19 02:18:54",315.0],["2025-12-19 02:20:39",395.0],["2025-12-19 02:20:40",224.0]],
+                            },
+                        {
+                                name: 'GET get_analysis_latest_cpe',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:23",217.1999969482422],["2025-12-19 02:19:09",297.0],["2025-12-19 02:19:10",167.6666717529297],["2025-12-19 02:19:14",123.0],["2025-12-19 02:21:00",361.3333435058594],["2025-12-19 02:21:08",425.0],["2025-12-19 02:21:14",480.0]],
+                            },
+                        {
+                                name: 'GET list_vulnerabilities_paginated',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",79.0],["2025-12-19 02:17:10",28.0],["2025-12-19 02:17:11",25.0],["2025-12-19 02:17:12",29.0],["2025-12-19 02:17:15",90.0],["2025-12-19 02:18:54",236.60000610351562],["2025-12-19 02:20:40",244.8000030517578]],
+                            },
+                        {
+                                name: 'POST get_recommendations[pkg:rpm/redhat/…e-metrics@2.13.8]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:50",212.3333282470703],["2025-12-19 02:18:51",16.0],["2025-12-19 02:18:53",7.0],["2025-12-19 02:20:35",170.3333282470703],["2025-12-19 02:20:36",10.0],["2025-12-19 02:20:37",12.0]],
+                            },
+                        {
+                                name: 'GET sbom_by_package[pkg:maven/io.qu…dhat.com%2fga%2f]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:40",24.5],["2025-12-19 02:18:41",10.0],["2025-12-19 02:20:26",18.0]],
+                            },
+                        {
+                                name: 'GET list_organizations',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",18.0],["2025-12-19 02:17:10",3.0],["2025-12-19 02:17:11",3.0],["2025-12-19 02:17:12",2.0],["2025-12-19 02:17:15",3.0],["2025-12-19 02:18:50",36.333335876464844],["2025-12-19 02:18:51",2.0],["2025-12-19 02:18:53",1.0],["2025-12-19 02:20:35",26.0],["2025-12-19 02:20:36",3.0],["2025-12-19 02:20:37",36.0]],
+                            },
+                        {
+                                name: 'GET list_products',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:21",16.799999237060547],["2025-12-19 02:19:06",25.66666603088379],["2025-12-19 02:19:07",3.5],["2025-12-19 02:20:53",8.0]],
+                            },
+                        {
+                                name: 'GET get_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:50",21.666667938232422],["2025-12-19 02:18:51",1.0],["2025-12-19 02:18:53",1.0],["2025-12-19 02:20:35",12.666666984558105],["2025-12-19 02:20:36",2.0],["2025-12-19 02:20:37",2.0]],
+                            },
+                        {
+                                name: 'GET get_advisory_by_doc_id',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",10.0],["2025-12-19 02:17:10",7.0],["2025-12-19 02:17:11",3.0],["2025-12-19 02:17:12",3.0],["2025-12-19 02:17:15",7.0],["2025-12-19 02:18:52",10.0],["2025-12-19 02:18:53",5.0],["2025-12-19 02:18:54",3.0],["2025-12-19 02:20:37",21.75],["2025-12-19 02:20:38",3.0]],
+                            },
+                        {
+                                name: 'GET get_analysis_status',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:23",4.400000095367432],["2025-12-19 02:19:09",5.0],["2025-12-19 02:19:10",2.6666667461395264],["2025-12-19 02:19:14",58.0],["2025-12-19 02:21:00",20.0],["2025-12-19 02:21:08",2.0],["2025-12-19 02:21:14",1.0]],
+                            },
+                        {
+                                name: 'GET search_exact_purl',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:21",8.600000381469727],["2025-12-19 02:19:06",19.25],["2025-12-19 02:19:07",2.0],["2025-12-19 02:20:53",5.800000190734863]],
+                            },
+                        {
+                                name: 'GET list_importer',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:17:09",2.0],["2025-12-19 02:17:10",1.0],["2025-12-19 02:17:11",1.0],["2025-12-19 02:17:12",1.0],["2025-12-19 02:17:16",2.0],["2025-12-19 02:18:55",17.200000762939453],["2025-12-19 02:20:40",3.4000000953674316]],
+                            },
+                        {
+                                name: 'GET download_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:50",8.666666030883789],["2025-12-19 02:18:51",3.0],["2025-12-19 02:18:53",1.0],["2025-12-19 02:20:35",6.333333492279053],["2025-12-19 02:20:36",2.0],["2025-12-19 02:20:37",4.0]],
+                            },
+                        
+                        ]
+                    });
+                </script>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Name</th>
+                        <th>50%ile (ms)</th>
+                        <th>60%ile (ms)</th>
+                        <th>70%ile (ms)</th>
+                        <th>80%ile (ms)</th>
+                        <th>90%ile (ms)</th>
+                        <th>95%ile (ms)</th>
+                        <th>99%ile (ms)</th>
+                        <th>100%ile (ms)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+            <td>DELETE</td>
+            <td>delete_sbom_from_pool_sequential[100 SBOMs]</td>
+            <td>900 (+100)</td>
+            <td>1,000 (0)</td>
+            <td>1,000 (0)</td>
+            <td>1,000 (0)</td>
+            <td>2,000 (0)</td>
+            <td>2,000 (0)</td>
+            <td>3,000 (+460)</td>
+            <td>3,000 (+460)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>download_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]</td>
+            <td>4 (-2)</td>
+            <td>4 (-5)</td>
+            <td>4 (-6)</td>
+            <td>7 (-50)</td>
+            <td>9 (-49)</td>
+            <td>18 (-42)</td>
+            <td>18 (-42)</td>
+            <td>18 (-42)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>get_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]</td>
+            <td>2 (-8)</td>
+            <td>3 (-14)</td>
+            <td>16 (-3)</td>
+            <td>17 (-7)</td>
+            <td>18 (-33)</td>
+            <td>47 (-88)</td>
+            <td>47 (-88)</td>
+            <td>47 (-88)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>get_advisory_by_doc_id</td>
+            <td>7 (-51)</td>
+            <td>9 (-49)</td>
+            <td>12 (-47)</td>
+            <td>13 (-145)</td>
+            <td>15 (-143)</td>
+            <td>56 (-102)</td>
+            <td>56 (-102)</td>
+            <td>56 (-102)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>get_analysis_latest_cpe</td>
+            <td>220 (0)</td>
+            <td>220 (-40)</td>
+            <td>300 (-10)</td>
+            <td>370 (+60)</td>
+            <td>480 (+150)</td>
+            <td>480 (+150)</td>
+            <td>485 (-5)</td>
+            <td>485 (-5)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>get_analysis_status</td>
+            <td>4 (-1)</td>
+            <td>4 (-1)</td>
+            <td>5 (-3)</td>
+            <td>6 (-2)</td>
+            <td>51 (+39)</td>
+            <td>51 (+39)</td>
+            <td>58 (+2)</td>
+            <td>58 (+2)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>get_purl_details[b00df2ca-df21-5…874-304e9c54e2bd]</td>
+            <td>600 (-400)</td>
+            <td>700 (-300)</td>
+            <td>700 (-300)</td>
+            <td>1,000 (0)</td>
+            <td>1,000 (-604)</td>
+            <td>1,000 (-604)</td>
+            <td>1,000 (-604)</td>
+            <td>1,000 (-604)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>get_sbom[sha256:720e4451…a939656247164447]</td>
+            <td>2,000 (+1,000)</td>
+            <td>3,000 (+1,000)</td>
+            <td>3,000 (+1,000)</td>
+            <td>3,000 (+1,000)</td>
+            <td>5,000 (+2,000)</td>
+            <td>5,000 (+2,000)</td>
+            <td>5,000 (+1,470)</td>
+            <td>5,000 (+1,470)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>get_sbom_advisories[sha256:87fd06bc…9d7b8304c0d2d9b2]</td>
+            <td>58,000 (-3,000)</td>
+            <td>61,000 (-3,000)</td>
+            <td>63,000 (-2,000)</td>
+            <td>63,000 (-3,000)</td>
+            <td>63,887 (-2,861)</td>
+            <td>63,887 (-2,861)</td>
+            <td>63,887 (-2,861)</td>
+            <td>63,887 (-2,861)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>get_sbom_license_ids[urn:uuid:019731…104-331632a21144]</td>
+            <td>9,000 (+1,000)</td>
+            <td>9,000 (+1,000)</td>
+            <td>10,000 (-1,000)</td>
+            <td>10,000 (-1,000)</td>
+            <td>11,000 (0)</td>
+            <td>11,000 (0)</td>
+            <td>11,000 (0)</td>
+            <td>11,000 (0)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>list_advisory</td>
+            <td>1,000 (+500)</td>
+            <td>1,000 (+400)</td>
+            <td>1,000 (+400)</td>
+            <td>1,000 (-1,000)</td>
+            <td>1,000 (-1,000)</td>
+            <td>1,000 (-1,000)</td>
+            <td>1,000 (-1,000)</td>
+            <td>1,000 (-1,000)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>list_advisory_labels</td>
+            <td>13,000 (0)</td>
+            <td>13,000 (-3,000)</td>
+            <td>18,000 (0)</td>
+            <td>19,000 (0)</td>
+            <td>19,869 (-131)</td>
+            <td>19,869 (-131)</td>
+            <td>19,869 (-131)</td>
+            <td>19,869 (-131)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>list_advisory_paginated</td>
+            <td>600 (-100)</td>
+            <td>600 (-100)</td>
+            <td>600 (-100)</td>
+            <td>700 (0)</td>
+            <td>700 (0)</td>
+            <td>799 (+99)</td>
+            <td>799 (+99)</td>
+            <td>799 (+99)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>list_importer</td>
+            <td>3 (-6)</td>
+            <td>4 (-7)</td>
+            <td>4 (-33)</td>
+            <td>4 (-36)</td>
+            <td>39 (-5)</td>
+            <td>39 (-5)</td>
+            <td>40 (-5)</td>
+            <td>40 (-5)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>list_organizations</td>
+            <td>7 (-3)</td>
+            <td>35 (+22)</td>
+            <td>36 (+1)</td>
+            <td>36 (-3)</td>
+            <td>45 (-4)</td>
+            <td>61 (+11)</td>
+            <td>61 (+11)</td>
+            <td>61 (+11)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>list_packages</td>
+            <td>480 (-20)</td>
+            <td>500 (0)</td>
+            <td>500 (-100)</td>
+            <td>700 (+100)</td>
+            <td>900 (+300)</td>
+            <td>900 (+300)</td>
+            <td>1,000 (0)</td>
+            <td>1,000 (0)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>list_packages_paginated</td>
+            <td>410 (-60)</td>
+            <td>470 (-30)</td>
+            <td>490 (-10)</td>
+            <td>500 (0)</td>
+            <td>500 (-100)</td>
+            <td>500 (-100)</td>
+            <td>571 (-29)</td>
+            <td>571 (-29)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>list_products</td>
+            <td>7 (-2)</td>
+            <td>8 (-1)</td>
+            <td>10 (-4)</td>
+            <td>10 (-9)</td>
+            <td>46 (-12)</td>
+            <td>46 (-12)</td>
+            <td>62 (+3)</td>
+            <td>62 (+3)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>list_sboms</td>
+            <td>800 (0)</td>
+            <td>800 (-200)</td>
+            <td>1,000 (0)</td>
+            <td>1,000 (-1,000)</td>
+            <td>2,000 (-1,000)</td>
+            <td>2,000 (-1,000)</td>
+            <td>2,000 (-1,504)</td>
+            <td>2,000 (-1,504)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>list_sboms_paginated</td>
+            <td>2,000 (+1,000)</td>
+            <td>2,000 (+1,000)</td>
+            <td>6,000 (+4,000)</td>
+            <td>7,000 (+5,000)</td>
+            <td>15,000 (+12,000)</td>
+            <td>15,000 (+12,000)</td>
+            <td>19,505 (+16,505)</td>
+            <td>19,505 (+16,505)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>list_vulnerabilities</td>
+            <td>360 (+90)</td>
+            <td>360 (-60)</td>
+            <td>400 (-200)</td>
+            <td>400 (-200)</td>
+            <td>420 (-180)</td>
+            <td>900 (+300)</td>
+            <td>900 (+300)</td>
+            <td>900 (+300)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>list_vulnerabilities_paginated</td>
+            <td>240 (+10)</td>
+            <td>240 (0)</td>
+            <td>250 (-20)</td>
+            <td>260 (-10)</td>
+            <td>279 (-21)</td>
+            <td>279 (-21)</td>
+            <td>279 (-31)</td>
+            <td>279 (-31)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>sbom_by_package[pkg:maven/io.qu…dhat.com%2fga%2f]</td>
+            <td>17 (-43)</td>
+            <td>17 (-45)</td>
+            <td>19 (-61)</td>
+            <td>23 (-77)</td>
+            <td>25 (-145)</td>
+            <td>47 (-203)</td>
+            <td>47 (-203)</td>
+            <td>47 (-203)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>search_advisory</td>
+            <td>2,000 (+1,000)</td>
+            <td>2,000 (+1,000)</td>
+            <td>2,000 (0)</td>
+            <td>2,000 (-1,000)</td>
+            <td>2,000 (-1,000)</td>
+            <td>2,000 (-1,000)</td>
+            <td>2,000 (-1,000)</td>
+            <td>2,000 (-1,000)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>search_exact_purl</td>
+            <td>7 (-19)</td>
+            <td>8 (-19)</td>
+            <td>10 (-18)</td>
+            <td>11 (-17)</td>
+            <td>15 (-50)</td>
+            <td>15 (-50)</td>
+            <td>48 (-21)</td>
+            <td>48 (-21)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>search_licenses</td>
+            <td>91,392 (-809)</td>
+            <td>91,392 (-809)</td>
+            <td>91,392 (-809)</td>
+            <td>91,392 (-809)</td>
+            <td>91,392 (-809)</td>
+            <td>91,392 (-809)</td>
+            <td>91,392 (-809)</td>
+            <td>91,392 (-809)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>search_purls</td>
+            <td>11,000 (-4,000)</td>
+            <td>11,000 (-5,000)</td>
+            <td>11,788 (-13,212)</td>
+            <td>11,788 (-13,905)</td>
+            <td>11,788 (-13,905)</td>
+            <td>11,788 (-13,905)</td>
+            <td>11,788 (-13,905)</td>
+            <td>11,788 (-13,905)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>search_purls_by_license</td>
+            <td>162,789 (+3,177)</td>
+            <td>162,789 (+3,177)</td>
+            <td>162,789 (+3,177)</td>
+            <td>162,789 (+3,177)</td>
+            <td>162,789 (+3,177)</td>
+            <td>162,789 (+3,177)</td>
+            <td>162,789 (+3,177)</td>
+            <td>162,789 (+3,177)</td>
+        </tr>
+<tr>
+            <td>GET</td>
+            <td>search_sboms_by_license</td>
+            <td>67,494 (-9,803)</td>
+            <td>67,494 (-9,803)</td>
+            <td>67,494 (-9,803)</td>
+            <td>67,494 (-9,803)</td>
+            <td>67,494 (-9,803)</td>
+            <td>67,494 (-9,803)</td>
+            <td>67,494 (-9,803)</td>
+            <td>67,494 (-9,803)</td>
+        </tr>
+<tr>
+            <td>POST</td>
+            <td>get_recommendations[pkg:rpm/redhat/…e-metrics@2.13.8]</td>
+            <td>170 (+158)</td>
+            <td>170 (+156)</td>
+            <td>170 (+150)</td>
+            <td>210 (+189)</td>
+            <td>210 (+154)</td>
+            <td>217 (+158)</td>
+            <td>217 (+158)</td>
+            <td>217 (+158)</td>
+        </tr>
+<tr>
+            <td>POST</td>
+            <td>post_vulnerability_analyze[pkg:rpm/redhat/…h=noarch&epoch=1]</td>
+            <td>190 (-10)</td>
+            <td>270 (-330)</td>
+            <td>280 (-520)</td>
+            <td>900 (+100)</td>
+            <td>900 (+100)</td>
+            <td>1,000 (+200)</td>
+            <td>1,000 (+200)</td>
+            <td>1,000 (+200)</td>
+        </tr>
+<tr>
+            <td></td>
+            <td>Aggregated</td>
+            <td>470 (+20)</td>
+            <td>700 (+100)</td>
+            <td>1,000 (0)</td>
+            <td>2,000 (0)</td>
+            <td>12,000 (0)</td>
+            <td>20,000 (-6,000)</td>
+            <td>64,000 (-3,000)</td>
+            <td>162,789 (+3,177)</td>
+        </tr>
+                </tbody>
+            </table>
+        </div>
+
+        
+
+        <div class="status_codes">
+        <h2>Status Code Metrics</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th colspan="2">Name</th>
+                    <th colspan="3">Status Codes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+        <td>DELETE</td>
+        <td colspan="2">delete_sbom_from_pool_sequential[100 SBOMs]</td>
+        <td colspan="3">37 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">download_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]</td>
+        <td colspan="3">10 [404]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">get_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]</td>
+        <td colspan="3">10 [404]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">get_advisory_by_doc_id</td>
+        <td colspan="3">10 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">get_analysis_latest_cpe</td>
+        <td colspan="3">15 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">get_analysis_status</td>
+        <td colspan="3">15 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">get_purl_details[b00df2ca-df21-5…874-304e9c54e2bd]</td>
+        <td colspan="3">10 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">get_sbom[sha256:720e4451…a939656247164447]</td>
+        <td colspan="3">15 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">get_sbom_advisories[sha256:87fd06bc…9d7b8304c0d2d9b2]</td>
+        <td colspan="3">15 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">get_sbom_license_ids[urn:uuid:019731…104-331632a21144]</td>
+        <td colspan="3">10 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">list_advisory</td>
+        <td colspan="3">10 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">list_advisory_labels</td>
+        <td colspan="3">15 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">list_advisory_paginated</td>
+        <td colspan="3">10 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">list_importer</td>
+        <td colspan="3">11 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">list_organizations</td>
+        <td colspan="3">10 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">list_packages</td>
+        <td colspan="3">11 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">list_packages_paginated</td>
+        <td colspan="3">11 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">list_products</td>
+        <td colspan="3">15 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">list_sboms</td>
+        <td colspan="3">15 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">list_sboms_paginated</td>
+        <td colspan="3">15 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">list_vulnerabilities</td>
+        <td colspan="3">10 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">list_vulnerabilities_paginated</td>
+        <td colspan="3">11 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">sbom_by_package[pkg:maven/io.qu…dhat.com%2fga%2f]</td>
+        <td colspan="3">10 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">search_advisory</td>
+        <td colspan="3">10 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">search_exact_purl</td>
+        <td colspan="3">15 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">search_licenses</td>
+        <td colspan="3">1 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">search_purls</td>
+        <td colspan="3">15 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">search_purls_by_license</td>
+        <td colspan="3">1 [200]</td>
+    </tr>
+<tr>
+        <td>GET</td>
+        <td colspan="2">search_sboms_by_license</td>
+        <td colspan="3">1 [200]</td>
+    </tr>
+<tr>
+        <td>POST</td>
+        <td colspan="2">get_recommendations[pkg:rpm/redhat/…e-metrics@2.13.8]</td>
+        <td colspan="3">10 [200]</td>
+    </tr>
+<tr>
+        <td>POST</td>
+        <td colspan="2">post_vulnerability_analyze[pkg:rpm/redhat/…h=noarch&epoch=1]</td>
+        <td colspan="3">10 [200]</td>
+    </tr>
+<tr>
+        <td></td>
+        <td colspan="2">Aggregated</td>
+        <td colspan="3">344 [200], 20 [404]</td>
+    </tr>
+            </tbody>
+        </table>
+    </div>
+
+        <div class="transactions">
+        <h2>Transaction Metrics</h2>
+
+        <div class="graph">
+                <div id="graph-tps" style="width: 1000px; height:500px; background: white;"></div>
+
+                <script type="text/javascript">
+                    var chartDom = document.getElementById('graph-tps');
+                    var myChart = echarts.init(chartDom);
+
+                    myChart.setOption({
+                        color: ['#2c664f', '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+                        tooltip: { trigger: 'axis' },
+                        toolbox: {
+                            feature: {
+                                dataZoom: { yAxisIndex: 'none' },
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        dataZoom: [
+                            {
+                                type: 'inside',
+                                start: 0,
+                                end: 100,
+                                fillerColor: 'rgba(34, 80, 61, 0.25)',
+                                selectedDataBackground: {
+                                    lineStyle: { color: '#2c664f' },
+                                    areaStyle: { color: '#378063' }
+                                }
+                            },
+                            {
+                                start: 0,
+                                end: 100,
+                                fillerColor: 'rgba(34, 80, 61, 0.25)',
+                                selectedDataBackground: {
+                                    lineStyle: { color: '#2c664f' },
+                                    areaStyle: { color: '#378063' }
+                                }
+                            },
+                        ],
+                        xAxis: { type: 'time' },
+                        yAxis: {
+                            name: 'Transactions #',
+                            nameLocation: 'center',
+                            nameRotate: 90,
+                            nameGap: 45,
+                            type: 'value'
+                        },
+                        
+                        series: [
+                            {
+                                name: 'Total',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                lineStyle: { color: '#2c664f' },
+                                areaStyle: { color: '#378063' },
+                                markArea: {
+                                    data: [
+                                        [
+                            {
+                                xAxis: '2025-12-19 02:17:09',
+                                itemStyle: { borderColor: 'rgba(44, 102, 79, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:09'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:17:09',
+                                itemStyle: { color: 'rgba(44, 102, 79, 0.05)' },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:16'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:17:16',
+                                itemStyle: { borderColor: 'rgba(44, 102, 79, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:16'
+                            }
+                        ],[
+                            {
+                                xAxis: '2025-12-19 02:22:17',
+                                itemStyle: { borderColor: 'rgba(179, 65, 65, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:17'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:22:17',
+                                itemStyle: { color: 'rgba(179, 65, 65, 0.05)' },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:36'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:22:36',
+                                itemStyle: { borderColor: 'rgba(179, 65, 65, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:36'
+                            }
+                        ],
+                                    ]
+                                },
+                                data: [["2025-12-19 02:17:09",10],["2025-12-19 02:17:10",14],["2025-12-19 02:17:11",12],["2025-12-19 02:17:12",12],["2025-12-19 02:17:13",1],["2025-12-19 02:17:14",2],["2025-12-19 02:17:15",8],["2025-12-19 02:17:16",5],["2025-12-19 02:17:21",16],["2025-12-19 02:17:22",5],["2025-12-19 02:17:23",15],["2025-12-19 02:17:24",1],["2025-12-19 02:17:31",1],["2025-12-19 02:17:33",1],["2025-12-19 02:17:34",1],["2025-12-19 02:17:35",1],["2025-12-19 02:17:36",1],["2025-12-19 02:17:37",3],["2025-12-19 02:17:40",1],["2025-12-19 02:17:42",2],["2025-12-19 02:17:43",1],["2025-12-19 02:17:44",2],["2025-12-19 02:17:50",1],["2025-12-19 02:17:53",1],["2025-12-19 02:17:59",1],["2025-12-19 02:18:03",1],["2025-12-19 02:18:07",1],["2025-12-19 02:18:11",1],["2025-12-19 02:18:16",1],["2025-12-19 02:18:20",1],["2025-12-19 02:18:25",1],["2025-12-19 02:18:29",1],["2025-12-19 02:18:33",1],["2025-12-19 02:18:37",1],["2025-12-19 02:18:40",8],["2025-12-19 02:18:41",3],["2025-12-19 02:18:45",2],["2025-12-19 02:18:48",4],["2025-12-19 02:18:49",2],["2025-12-19 02:18:50",19],["2025-12-19 02:18:51",8],["2025-12-19 02:18:52",12],["2025-12-19 02:18:53",11],["2025-12-19 02:18:54",11],["2025-12-19 02:18:55",14],["2025-12-19 02:18:56",6],["2025-12-19 02:18:57",1],["2025-12-19 02:19:00",1],["2025-12-19 02:19:04",1],["2025-12-19 02:19:06",9],["2025-12-19 02:19:07",8],["2025-12-19 02:19:08",3],["2025-12-19 02:19:09",3],["2025-12-19 02:19:10",10],["2025-12-19 02:19:12",1],["2025-12-19 02:19:14",3],["2025-12-19 02:19:16",1],["2025-12-19 02:19:20",2],["2025-12-19 02:19:21",1],["2025-12-19 02:19:22",1],["2025-12-19 02:19:23",1],["2025-12-19 02:19:25",1],["2025-12-19 02:19:27",1],["2025-12-19 02:19:28",1],["2025-12-19 02:19:29",2],["2025-12-19 02:19:30",1],["2025-12-19 02:19:31",1],["2025-12-19 02:19:32",2],["2025-12-19 02:19:36",1],["2025-12-19 02:19:39",1],["2025-12-19 02:19:43",1],["2025-12-19 02:19:47",1],["2025-12-19 02:19:51",1],["2025-12-19 02:19:52",1],["2025-12-19 02:19:55",1],["2025-12-19 02:19:59",1],["2025-12-19 02:20:03",1],["2025-12-19 02:20:07",1],["2025-12-19 02:20:10",1],["2025-12-19 02:20:15",1],["2025-12-19 02:20:18",1],["2025-12-19 02:20:23",1],["2025-12-19 02:20:26",11],["2025-12-19 02:20:31",1],["2025-12-19 02:20:33",1],["2025-12-19 02:20:34",3],["2025-12-19 02:20:35",19],["2025-12-19 02:20:36",10],["2025-12-19 02:20:37",19],["2025-12-19 02:20:38",4],["2025-12-19 02:20:39",5],["2025-12-19 02:20:40",19],["2025-12-19 02:20:41",7],["2025-12-19 02:20:43",1],["2025-12-19 02:20:47",1],["2025-12-19 02:20:50",1],["2025-12-19 02:20:53",19],["2025-12-19 02:20:55",1],["2025-12-19 02:20:56",1],["2025-12-19 02:20:59",1],["2025-12-19 02:21:00",8],["2025-12-19 02:21:01",1],["2025-12-19 02:21:03",1],["2025-12-19 02:21:06",1],["2025-12-19 02:21:08",2],["2025-12-19 02:21:09",1],["2025-12-19 02:21:11",1],["2025-12-19 02:21:12",1],["2025-12-19 02:21:13",1],["2025-12-19 02:21:14",4],["2025-12-19 02:21:15",2],["2025-12-19 02:21:18",1],["2025-12-19 02:21:20",2],["2025-12-19 02:21:24",3],["2025-12-19 02:21:25",1],["2025-12-19 02:21:27",1],["2025-12-19 02:21:28",1],["2025-12-19 02:21:32",1],["2025-12-19 02:21:36",1],["2025-12-19 02:21:39",1],["2025-12-19 02:21:44",1],["2025-12-19 02:21:47",1],["2025-12-19 02:21:52",1],["2025-12-19 02:21:55",1],["2025-12-19 02:22:00",1],["2025-12-19 02:22:03",1],["2025-12-19 02:22:08",1],["2025-12-19 02:22:11",1],["2025-12-19 02:22:15",1]],
+                            },
+                            
+                        ]
+                    });
+                </script>
+            </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2">Transaction</th>
+                    <th># Times Run</th>
+                    <th># Fails</th>
+                    <th>Average (ms)</th>
+                    <th>Min (ms)</th>
+                    <th>Max (ms)</th>
+                    <th>RPS</th>
+                    <th>Failures/s</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+            <td colspan="10" align="left"><strong>WebsiteUser</strong></td>
+        </tr>
+<tr>
+            <td colspan="2">0.0 logon</strong></td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">0.1 website_index</strong></td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">0.2 website_openapi</strong></td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">0.3 website_sboms</strong></td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">0.4 website_packages</strong></td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">0.5 website_advisories</strong></td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">0.6 website_importers</strong></td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="10" align="left"><strong>RestAPIUser</strong></td>
+        </tr>
+<tr>
+            <td colspan="2">1.0 logon</strong></td>
+            <td>10 (0)</td>
+            <td>0 (0)</td>
+            <td>13.50 (+0.00)</td>
+            <td>7 (-2)</td>
+            <td>21 (+4)</td>
+            <td>0.03 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.1 list_organizations</strong></td>
+            <td>10 (0)</td>
+            <td>0 (0)</td>
+            <td>23.00 (+0.50)</td>
+            <td>1 (-4)</td>
+            <td>61 (+11)</td>
+            <td>0.03 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.2 list_advisory</strong></td>
+            <td>10 (0)</td>
+            <td>0 (0)</td>
+            <td>1022.40 (+51.30)</td>
+            <td>301 (-56)</td>
+            <td>1435 (-646)</td>
+            <td>0.03 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.3 list_advisory_paginated</strong></td>
+            <td>10 (0)</td>
+            <td>0 (0)</td>
+            <td>574.20 (-33.70)</td>
+            <td>204 (-148)</td>
+            <td>799 (+77)</td>
+            <td>0.03 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.4 get_advisory_by_doc_id</strong></td>
+            <td>10 (0)</td>
+            <td>0 (0)</td>
+            <td>12.80 (-56.30)</td>
+            <td>3 (-1)</td>
+            <td>56 (-102)</td>
+            <td>0.03 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.5 search_advisory</strong></td>
+            <td>10 (0)</td>
+            <td>0 (0)</td>
+            <td>1566.20 (-48.60)</td>
+            <td>491 (+46)</td>
+            <td>2164 (-979)</td>
+            <td>0.03 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.6 list_vulnerabilities</strong></td>
+            <td>10 (-1)</td>
+            <td>0 (0)</td>
+            <td>397.80 (+45.62)</td>
+            <td>192 (+71)</td>
+            <td>912 (+302)</td>
+            <td>0.03 (-0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.7 list_vulnerabilities_paginated</strong></td>
+            <td>11 (0)</td>
+            <td>0 (0)</td>
+            <td>227.09 (+3.73)</td>
+            <td>90 (+3)</td>
+            <td>279 (-31)</td>
+            <td>0.04 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.8 list_importer</strong></td>
+            <td>11 (0)</td>
+            <td>0 (0)</td>
+            <td>9.55 (-8.82)</td>
+            <td>2 (0)</td>
+            <td>40 (-5)</td>
+            <td>0.04 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.9 list_packages</strong></td>
+            <td>11 (0)</td>
+            <td>0 (0)</td>
+            <td>567.82 (+63.73)</td>
+            <td>273 (+151)</td>
+            <td>1044 (-2)</td>
+            <td>0.04 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.10 list_packages_paginated</strong></td>
+            <td>11 (0)</td>
+            <td>0 (0)</td>
+            <td>412.00 (-7.64)</td>
+            <td>199 (+31)</td>
+            <td>571 (-34)</td>
+            <td>0.04 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.11 search_purls</strong></td>
+            <td>15 (0)</td>
+            <td>0 (0)</td>
+            <td>10633.53 (-6895.73)</td>
+            <td>5231 (-5273)</td>
+            <td>11788 (-13905)</td>
+            <td>0.05 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.12 search_exact_purl</strong></td>
+            <td>15 (0)</td>
+            <td>0 (0)</td>
+            <td>10.07 (-15.93)</td>
+            <td>2 (-2)</td>
+            <td>48 (-21)</td>
+            <td>0.05 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.13 list_products</strong></td>
+            <td>15 (0)</td>
+            <td>0 (0)</td>
+            <td>13.87 (-4.07)</td>
+            <td>3 (-1)</td>
+            <td>62 (+3)</td>
+            <td>0.05 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.14 list_sboms</strong></td>
+            <td>15 (0)</td>
+            <td>0 (0)</td>
+            <td>1009.87 (-284.33)</td>
+            <td>655 (+40)</td>
+            <td>2189 (-1315)</td>
+            <td>0.05 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.15 list_sboms_paginated</strong></td>
+            <td>15 (0)</td>
+            <td>0 (0)</td>
+            <td>4736.47 (+3301.87)</td>
+            <td>753 (+466)</td>
+            <td>19505 (+16439)</td>
+            <td>0.05 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.16 get_analysis_status</strong></td>
+            <td>15 (0)</td>
+            <td>0 (0)</td>
+            <td>10.40 (+1.60)</td>
+            <td>1 (-1)</td>
+            <td>58 (+2)</td>
+            <td>0.05 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.17 get_analysis_latest_cpe</strong></td>
+            <td>15 (0)</td>
+            <td>0 (0)</td>
+            <td>266.53 (+9.53)</td>
+            <td>92 (-38)</td>
+            <td>485 (-7)</td>
+            <td>0.05 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.18 list_advisory_labels</strong></td>
+            <td>15 (0)</td>
+            <td>0 (0)</td>
+            <td>14051.87 (-1007.13)</td>
+            <td>9801 (-1267)</td>
+            <td>19869 (-420)</td>
+            <td>0.05 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.19 get_sbom[sha256:720e4451…a939656247164447]</strong></td>
+            <td>15 (0)</td>
+            <td>0 (0)</td>
+            <td>2429.80 (+1019.67)</td>
+            <td>508 (+204)</td>
+            <td>5469 (+1939)</td>
+            <td>0.05 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.20 get_sbom_advisories[sha256:87fd06bc…9d7b8304c0d2d9b2]</strong></td>
+            <td>15 (0)</td>
+            <td>0 (0)</td>
+            <td>58321.60 (-2381.33)</td>
+            <td>50134 (-1077)</td>
+            <td>63887 (-2861)</td>
+            <td>0.05 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.21 sbom_by_package[pkg:maven/io.qu…dhat.com%2fga%2f]</strong></td>
+            <td>10 (0)</td>
+            <td>0 (0)</td>
+            <td>19.80 (-67.00)</td>
+            <td>8 (+3)</td>
+            <td>47 (-204)</td>
+            <td>0.03 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.22 get_sbom_license_ids[urn:uuid:019731…104-331632a21144]</strong></td>
+            <td>10 (0)</td>
+            <td>0 (0)</td>
+            <td>9186.30 (+10.90)</td>
+            <td>7414 (+15)</td>
+            <td>11205 (-233)</td>
+            <td>0.03 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.23 post_vulnerability_analyze[pkg:rpm/redhat/…h=noarch&epoch=1]</strong></td>
+            <td>10 (0)</td>
+            <td>0 (0)</td>
+            <td>405.50 (-54.80)</td>
+            <td>32 (-57)</td>
+            <td>1027 (+216)</td>
+            <td>0.03 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.24 get_purl_details[b00df2ca-df21-5…874-304e9c54e2bd]</strong></td>
+            <td>10 (0)</td>
+            <td>0 (0)</td>
+            <td>704.80 (-203.90)</td>
+            <td>82 (-97)</td>
+            <td>1494 (-110)</td>
+            <td>0.03 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.25 get_recommendations[pkg:rpm/redhat/…e-metrics@2.13.8]</strong></td>
+            <td>10 (0)</td>
+            <td>0 (0)</td>
+            <td>119.30 (+97.40)</td>
+            <td>7 (+2)</td>
+            <td>217 (+158)</td>
+            <td>0.03 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.26 download_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]</strong></td>
+            <td>10 (0)</td>
+            <td>0 (0)</td>
+            <td>5.80 (-15.70)</td>
+            <td>2 (0)</td>
+            <td>18 (-42)</td>
+            <td>0.03 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">1.27 get_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]</strong></td>
+            <td>10 (0)</td>
+            <td>0 (0)</td>
+            <td>11.00 (-17.50)</td>
+            <td>1 (-1)</td>
+            <td>47 (-88)</td>
+            <td>0.03 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="10" align="left"><strong>RestAPIUserSlow</strong></td>
+        </tr>
+<tr>
+            <td colspan="2">2.0 logon</strong></td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">2.1 search_licenses</strong></td>
+            <td>1 (0)</td>
+            <td>0 (0)</td>
+            <td>91392.00 (-809.00)</td>
+            <td>91392 (-809)</td>
+            <td>91392 (-809)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">2.2 search_sboms_by_license</strong></td>
+            <td>1 (0)</td>
+            <td>0 (0)</td>
+            <td>67494.00 (-9803.00)</td>
+            <td>67494 (-9803)</td>
+            <td>67494 (-9803)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">2.3 search_purls_by_license</strong></td>
+            <td>1 (0)</td>
+            <td>0 (0)</td>
+            <td>162789.00 (+3177.00)</td>
+            <td>162789 (+3177)</td>
+            <td>162789 (+3177)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="10" align="left"><strong>RestAPIUserDelete</strong></td>
+        </tr>
+<tr>
+            <td colspan="2">3.0 logon</strong></td>
+            <td>37 (0)</td>
+            <td>0 (0)</td>
+            <td>9.35 (-0.43)</td>
+            <td>6 (0)</td>
+            <td>17 (-2)</td>
+            <td>0.12 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">3.1 delete_sbom_from_pool_sequential[100 SBOMs]</strong></td>
+            <td>37 (-1)</td>
+            <td>0 (0)</td>
+            <td>1036.68 (+59.52)</td>
+            <td>146 (-28)</td>
+            <td>3102 (+562)</td>
+            <td>0.12 (-0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2"> Aggregated</strong></td>
+            <td>411 (-2)</td>
+            <td>0 (0)</td>
+            <td>4589.14 (-226.57)</td>
+            <td>1 (-1)</td>
+            <td>162789 (+3177)</td>
+            <td>1.37 (-0.01)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+            </tbody>
+        </table>
+    </div>
+
+        <div class="scenarios">
+        <h2>Scenario Metrics</h2>
+
+        <div class="graph">
+                <div id="graph-sps" style="width: 1000px; height:500px; background: white;"></div>
+
+                <script type="text/javascript">
+                    var chartDom = document.getElementById('graph-sps');
+                    var myChart = echarts.init(chartDom);
+
+                    myChart.setOption({
+                        color: ['#2c664f', '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+                        tooltip: { trigger: 'axis' },
+                        toolbox: {
+                            feature: {
+                                dataZoom: { yAxisIndex: 'none' },
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        dataZoom: [
+                            {
+                                type: 'inside',
+                                start: 0,
+                                end: 100,
+                                fillerColor: 'rgba(34, 80, 61, 0.25)',
+                                selectedDataBackground: {
+                                    lineStyle: { color: '#2c664f' },
+                                    areaStyle: { color: '#378063' }
+                                }
+                            },
+                            {
+                                start: 0,
+                                end: 100,
+                                fillerColor: 'rgba(34, 80, 61, 0.25)',
+                                selectedDataBackground: {
+                                    lineStyle: { color: '#2c664f' },
+                                    areaStyle: { color: '#378063' }
+                                }
+                            },
+                        ],
+                        xAxis: { type: 'time' },
+                        yAxis: {
+                            name: 'Scenarios #',
+                            nameLocation: 'center',
+                            nameRotate: 90,
+                            nameGap: 45,
+                            type: 'value'
+                        },
+                        
+                        series: [
+                            {
+                                name: 'Total',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                lineStyle: { color: '#2c664f' },
+                                areaStyle: { color: '#378063' },
+                                markArea: {
+                                    data: [
+                                        [
+                            {
+                                xAxis: '2025-12-19 02:17:09',
+                                itemStyle: { borderColor: 'rgba(44, 102, 79, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:09'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:17:09',
+                                itemStyle: { color: 'rgba(44, 102, 79, 0.05)' },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:16'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:17:16',
+                                itemStyle: { borderColor: 'rgba(44, 102, 79, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:16'
+                            }
+                        ],[
+                            {
+                                xAxis: '2025-12-19 02:22:17',
+                                itemStyle: { borderColor: 'rgba(179, 65, 65, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:17'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:22:17',
+                                itemStyle: { color: 'rgba(179, 65, 65, 0.05)' },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:36'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:22:36',
+                                itemStyle: { borderColor: 'rgba(179, 65, 65, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:36'
+                            }
+                        ],
+                                    ]
+                                },
+                                data: [["2025-12-19 02:17:21",1],["2025-12-19 02:17:31",1],["2025-12-19 02:17:40",1],["2025-12-19 02:17:50",1],["2025-12-19 02:17:59",1],["2025-12-19 02:18:07",1],["2025-12-19 02:18:16",1],["2025-12-19 02:18:25",1],["2025-12-19 02:18:33",1],["2025-12-19 02:18:41",1],["2025-12-19 02:18:50",4],["2025-12-19 02:18:51",1],["2025-12-19 02:18:53",1],["2025-12-19 02:18:57",1],["2025-12-19 02:19:04",1],["2025-12-19 02:19:12",1],["2025-12-19 02:19:20",1],["2025-12-19 02:19:28",1],["2025-12-19 02:19:36",1],["2025-12-19 02:19:43",1],["2025-12-19 02:19:51",1],["2025-12-19 02:19:59",1],["2025-12-19 02:20:07",1],["2025-12-19 02:20:15",1],["2025-12-19 02:20:23",1],["2025-12-19 02:20:31",1],["2025-12-19 02:20:35",3],["2025-12-19 02:20:36",1],["2025-12-19 02:20:37",1],["2025-12-19 02:20:39",1],["2025-12-19 02:20:47",1],["2025-12-19 02:20:56",1],["2025-12-19 02:21:03",1],["2025-12-19 02:21:11",1],["2025-12-19 02:21:20",1],["2025-12-19 02:21:28",1],["2025-12-19 02:21:36",1],["2025-12-19 02:21:44",1],["2025-12-19 02:21:52",1],["2025-12-19 02:22:00",1],["2025-12-19 02:22:08",1],["2025-12-19 02:22:15",1]],
+                            },
+                            
+                        ]
+                    });
+                </script>
+            </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2">Scenario</th>
+                    <th># Users</th>
+                    <th># Times Run</th>
+                    <th>Average (ms)</th>
+                    <th>Min (ms)</th>
+                    <th>Max (ms)</th>
+                    <th>Scenarios/s</th>
+                    <th>Iterations</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+            <td colspan="2">WebsiteUser</strong></td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">RestAPIUser</strong></td>
+            <td>5 (0)</td>
+            <td>10 (0)</td>
+            <td>102536.20 (-6584.30)</td>
+            <td>95686 (-5863)</td>
+            <td>106126 (-9059)</td>
+            <td>0.03 (+0.00)</td>
+            <td>2.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">RestAPIUserSlow</strong></td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0 (0)</td>
+            <td>0 (0)</td>
+            <td>0.00 (+0.00)</td>
+            <td>0.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">RestAPIUserDelete</strong></td>
+            <td>1 (0)</td>
+            <td>37 (0)</td>
+            <td>8180.65 (+82.24)</td>
+            <td>6997 (+657)</td>
+            <td>10267 (-1)</td>
+            <td>0.12 (+0.00)</td>
+            <td>37.00 (+0.00)</td>
+        </tr>
+<tr>
+            <td colspan="2">Aggregated</strong></td>
+            <td>6 (0)</td>
+            <td>47 (0)</td>
+            <td>28256.30 (-1336.17)</td>
+            <td>6997 (+657)</td>
+            <td>106126 (-9059)</td>
+            <td>0.16 (+0.00)</td>
+            <td>39.00 (+0.00)</td>
+        </tr>
+            </tbody>
+        </table>
+    </div>
+
+        <div class="users">
+        <h2>User Metrics</h2>
+            <div class="graph">
+                <div id="graph-active-users" style="width: 1000px; height:500px; background: white;"></div>
+
+                <script type="text/javascript">
+                    var chartDom = document.getElementById('graph-active-users');
+                    var myChart = echarts.init(chartDom);
+
+                    myChart.setOption({
+                        color: ['#2c664f', '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+                        tooltip: { trigger: 'axis' },
+                        toolbox: {
+                            feature: {
+                                dataZoom: { yAxisIndex: 'none' },
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        dataZoom: [
+                            {
+                                type: 'inside',
+                                start: 0,
+                                end: 100,
+                                fillerColor: 'rgba(34, 80, 61, 0.25)',
+                                selectedDataBackground: {
+                                    lineStyle: { color: '#2c664f' },
+                                    areaStyle: { color: '#378063' }
+                                }
+                            },
+                            {
+                                start: 0,
+                                end: 100,
+                                fillerColor: 'rgba(34, 80, 61, 0.25)',
+                                selectedDataBackground: {
+                                    lineStyle: { color: '#2c664f' },
+                                    areaStyle: { color: '#378063' }
+                                }
+                            },
+                        ],
+                        xAxis: { type: 'time' },
+                        yAxis: {
+                            name: 'Active users #',
+                            nameLocation: 'center',
+                            nameRotate: 90,
+                            nameGap: 45,
+                            type: 'value'
+                        },
+                        
+                        series: [
+                            {
+                                name: 'Total',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                lineStyle: { color: '#2c664f' },
+                                areaStyle: { color: '#378063' },
+                                markArea: {
+                                    data: [
+                                        [
+                            {
+                                xAxis: '2025-12-19 02:17:09',
+                                itemStyle: { borderColor: 'rgba(44, 102, 79, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:09'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:17:09',
+                                itemStyle: { color: 'rgba(44, 102, 79, 0.05)' },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:16'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:17:16',
+                                itemStyle: { borderColor: 'rgba(44, 102, 79, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:16'
+                            }
+                        ],[
+                            {
+                                xAxis: '2025-12-19 02:22:17',
+                                itemStyle: { borderColor: 'rgba(179, 65, 65, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:17'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:22:17',
+                                itemStyle: { color: 'rgba(179, 65, 65, 0.05)' },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:36'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:22:36',
+                                itemStyle: { borderColor: 'rgba(179, 65, 65, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:36'
+                            }
+                        ],
+                                    ]
+                                },
+                                data: [["2025-12-19 02:17:09",7],["2025-12-19 02:17:10",7],["2025-12-19 02:17:11",7],["2025-12-19 02:17:12",7],["2025-12-19 02:17:13",7],["2025-12-19 02:17:14",7],["2025-12-19 02:17:15",7],["2025-12-19 02:17:16",7],["2025-12-19 02:17:17",7],["2025-12-19 02:17:18",7],["2025-12-19 02:17:19",7],["2025-12-19 02:17:20",7],["2025-12-19 02:17:21",7],["2025-12-19 02:17:22",7],["2025-12-19 02:17:23",7],["2025-12-19 02:17:24",7],["2025-12-19 02:17:25",7],["2025-12-19 02:17:26",7],["2025-12-19 02:17:27",7],["2025-12-19 02:17:28",7],["2025-12-19 02:17:29",7],["2025-12-19 02:17:30",7],["2025-12-19 02:17:31",7],["2025-12-19 02:17:32",7],["2025-12-19 02:17:33",7],["2025-12-19 02:17:34",7],["2025-12-19 02:17:35",7],["2025-12-19 02:17:36",7],["2025-12-19 02:17:37",7],["2025-12-19 02:17:38",7],["2025-12-19 02:17:39",7],["2025-12-19 02:17:40",7],["2025-12-19 02:17:41",7],["2025-12-19 02:17:42",7],["2025-12-19 02:17:43",7],["2025-12-19 02:17:44",7],["2025-12-19 02:17:45",7],["2025-12-19 02:17:46",7],["2025-12-19 02:17:47",7],["2025-12-19 02:17:48",7],["2025-12-19 02:17:49",7],["2025-12-19 02:17:50",7],["2025-12-19 02:17:51",7],["2025-12-19 02:17:52",7],["2025-12-19 02:17:53",7],["2025-12-19 02:17:54",7],["2025-12-19 02:17:55",7],["2025-12-19 02:17:56",7],["2025-12-19 02:17:57",7],["2025-12-19 02:17:58",7],["2025-12-19 02:17:59",7],["2025-12-19 02:18:00",7],["2025-12-19 02:18:01",7],["2025-12-19 02:18:02",7],["2025-12-19 02:18:03",7],["2025-12-19 02:18:04",7],["2025-12-19 02:18:05",7],["2025-12-19 02:18:06",7],["2025-12-19 02:18:07",7],["2025-12-19 02:18:08",7],["2025-12-19 02:18:09",7],["2025-12-19 02:18:10",7],["2025-12-19 02:18:11",7],["2025-12-19 02:18:12",7],["2025-12-19 02:18:13",7],["2025-12-19 02:18:14",7],["2025-12-19 02:18:15",7],["2025-12-19 02:18:16",7],["2025-12-19 02:18:17",7],["2025-12-19 02:18:18",7],["2025-12-19 02:18:19",7],["2025-12-19 02:18:20",7],["2025-12-19 02:18:21",7],["2025-12-19 02:18:22",7],["2025-12-19 02:18:23",7],["2025-12-19 02:18:24",7],["2025-12-19 02:18:25",7],["2025-12-19 02:18:26",7],["2025-12-19 02:18:27",7],["2025-12-19 02:18:28",7],["2025-12-19 02:18:29",7],["2025-12-19 02:18:30",7],["2025-12-19 02:18:31",7],["2025-12-19 02:18:32",7],["2025-12-19 02:18:33",7],["2025-12-19 02:18:34",7],["2025-12-19 02:18:35",7],["2025-12-19 02:18:36",7],["2025-12-19 02:18:37",7],["2025-12-19 02:18:38",7],["2025-12-19 02:18:39",7],["2025-12-19 02:18:40",7],["2025-12-19 02:18:41",7],["2025-12-19 02:18:42",7],["2025-12-19 02:18:43",7],["2025-12-19 02:18:44",7],["2025-12-19 02:18:45",7],["2025-12-19 02:18:46",7],["2025-12-19 02:18:47",7],["2025-12-19 02:18:48",7],["2025-12-19 02:18:49",7],["2025-12-19 02:18:50",7],["2025-12-19 02:18:51",7],["2025-12-19 02:18:52",7],["2025-12-19 02:18:53",7],["2025-12-19 02:18:54",7],["2025-12-19 02:18:55",7],["2025-12-19 02:18:56",7],["2025-12-19 02:18:57",7],["2025-12-19 02:18:58",7],["2025-12-19 02:18:59",7],["2025-12-19 02:19:00",7],["2025-12-19 02:19:01",7],["2025-12-19 02:19:02",7],["2025-12-19 02:19:03",7],["2025-12-19 02:19:04",7],["2025-12-19 02:19:05",7],["2025-12-19 02:19:06",7],["2025-12-19 02:19:07",7],["2025-12-19 02:19:08",7],["2025-12-19 02:19:09",7],["2025-12-19 02:19:10",7],["2025-12-19 02:19:11",7],["2025-12-19 02:19:12",7],["2025-12-19 02:19:13",7],["2025-12-19 02:19:14",7],["2025-12-19 02:19:15",7],["2025-12-19 02:19:16",7],["2025-12-19 02:19:17",7],["2025-12-19 02:19:18",7],["2025-12-19 02:19:19",7],["2025-12-19 02:19:20",7],["2025-12-19 02:19:21",7],["2025-12-19 02:19:22",7],["2025-12-19 02:19:23",7],["2025-12-19 02:19:24",7],["2025-12-19 02:19:25",7],["2025-12-19 02:19:26",7],["2025-12-19 02:19:27",7],["2025-12-19 02:19:28",7],["2025-12-19 02:19:29",7],["2025-12-19 02:19:30",7],["2025-12-19 02:19:31",7],["2025-12-19 02:19:32",7],["2025-12-19 02:19:33",7],["2025-12-19 02:19:34",7],["2025-12-19 02:19:35",7],["2025-12-19 02:19:36",7],["2025-12-19 02:19:37",7],["2025-12-19 02:19:38",7],["2025-12-19 02:19:39",7],["2025-12-19 02:19:40",7],["2025-12-19 02:19:41",7],["2025-12-19 02:19:42",7],["2025-12-19 02:19:43",7],["2025-12-19 02:19:44",7],["2025-12-19 02:19:45",7],["2025-12-19 02:19:46",7],["2025-12-19 02:19:47",7],["2025-12-19 02:19:48",7],["2025-12-19 02:19:49",7],["2025-12-19 02:19:50",7],["2025-12-19 02:19:51",7],["2025-12-19 02:19:52",7],["2025-12-19 02:19:53",7],["2025-12-19 02:19:54",7],["2025-12-19 02:19:55",7],["2025-12-19 02:19:56",7],["2025-12-19 02:19:57",7],["2025-12-19 02:19:58",7],["2025-12-19 02:19:59",7],["2025-12-19 02:20:00",7],["2025-12-19 02:20:01",7],["2025-12-19 02:20:02",7],["2025-12-19 02:20:03",7],["2025-12-19 02:20:04",7],["2025-12-19 02:20:05",7],["2025-12-19 02:20:06",7],["2025-12-19 02:20:07",7],["2025-12-19 02:20:08",7],["2025-12-19 02:20:09",7],["2025-12-19 02:20:10",7],["2025-12-19 02:20:11",7],["2025-12-19 02:20:12",7],["2025-12-19 02:20:13",7],["2025-12-19 02:20:14",7],["2025-12-19 02:20:15",7],["2025-12-19 02:20:16",7],["2025-12-19 02:20:17",7],["2025-12-19 02:20:18",7],["2025-12-19 02:20:19",7],["2025-12-19 02:20:20",7],["2025-12-19 02:20:21",7],["2025-12-19 02:20:22",7],["2025-12-19 02:20:23",7],["2025-12-19 02:20:24",7],["2025-12-19 02:20:25",7],["2025-12-19 02:20:26",7],["2025-12-19 02:20:27",7],["2025-12-19 02:20:28",7],["2025-12-19 02:20:29",7],["2025-12-19 02:20:30",7],["2025-12-19 02:20:31",7],["2025-12-19 02:20:32",7],["2025-12-19 02:20:33",7],["2025-12-19 02:20:34",7],["2025-12-19 02:20:35",7],["2025-12-19 02:20:36",7],["2025-12-19 02:20:37",7],["2025-12-19 02:20:38",7],["2025-12-19 02:20:39",7],["2025-12-19 02:20:40",7],["2025-12-19 02:20:41",7],["2025-12-19 02:20:42",7],["2025-12-19 02:20:43",7],["2025-12-19 02:20:44",7],["2025-12-19 02:20:45",7],["2025-12-19 02:20:46",7],["2025-12-19 02:20:47",7],["2025-12-19 02:20:48",7],["2025-12-19 02:20:49",7],["2025-12-19 02:20:50",7],["2025-12-19 02:20:51",7],["2025-12-19 02:20:52",7],["2025-12-19 02:20:53",7],["2025-12-19 02:20:54",7],["2025-12-19 02:20:55",7],["2025-12-19 02:20:56",7],["2025-12-19 02:20:57",7],["2025-12-19 02:20:58",7],["2025-12-19 02:20:59",7],["2025-12-19 02:21:00",7],["2025-12-19 02:21:01",7],["2025-12-19 02:21:02",7],["2025-12-19 02:21:03",7],["2025-12-19 02:21:04",7],["2025-12-19 02:21:05",7],["2025-12-19 02:21:06",7],["2025-12-19 02:21:07",7],["2025-12-19 02:21:08",7],["2025-12-19 02:21:09",7],["2025-12-19 02:21:10",7],["2025-12-19 02:21:11",7],["2025-12-19 02:21:12",7],["2025-12-19 02:21:13",7],["2025-12-19 02:21:14",7],["2025-12-19 02:21:15",7],["2025-12-19 02:21:16",7],["2025-12-19 02:21:17",7],["2025-12-19 02:21:18",7],["2025-12-19 02:21:19",7],["2025-12-19 02:21:20",7],["2025-12-19 02:21:21",7],["2025-12-19 02:21:22",7],["2025-12-19 02:21:23",7],["2025-12-19 02:21:24",7],["2025-12-19 02:21:25",7],["2025-12-19 02:21:26",7],["2025-12-19 02:21:27",7],["2025-12-19 02:21:28",7],["2025-12-19 02:21:29",7],["2025-12-19 02:21:30",7],["2025-12-19 02:21:31",7],["2025-12-19 02:21:32",7],["2025-12-19 02:21:33",7],["2025-12-19 02:21:34",7],["2025-12-19 02:21:35",7],["2025-12-19 02:21:36",7],["2025-12-19 02:21:37",7],["2025-12-19 02:21:38",7],["2025-12-19 02:21:39",7],["2025-12-19 02:21:40",7],["2025-12-19 02:21:41",7],["2025-12-19 02:21:42",7],["2025-12-19 02:21:43",7],["2025-12-19 02:21:44",7],["2025-12-19 02:21:45",7],["2025-12-19 02:21:46",7],["2025-12-19 02:21:47",7],["2025-12-19 02:21:48",7],["2025-12-19 02:21:49",7],["2025-12-19 02:21:50",7],["2025-12-19 02:21:51",7],["2025-12-19 02:21:52",7],["2025-12-19 02:21:53",7],["2025-12-19 02:21:54",7],["2025-12-19 02:21:55",7],["2025-12-19 02:21:56",7],["2025-12-19 02:21:57",7],["2025-12-19 02:21:58",7],["2025-12-19 02:21:59",7],["2025-12-19 02:22:00",7],["2025-12-19 02:22:01",7],["2025-12-19 02:22:02",7],["2025-12-19 02:22:03",7],["2025-12-19 02:22:04",7],["2025-12-19 02:22:05",7],["2025-12-19 02:22:06",7],["2025-12-19 02:22:07",7],["2025-12-19 02:22:08",7]],
+                            },
+                            
+                        ]
+                    });
+                </script>
+            </div>
+        </div>
+
+        <div class="errors">
+        <h2>Errors</h2>
+
+        <div class="graph">
+                <div id="graph-eps" style="width: 1000px; height:500px; background: white;"></div>
+
+                <script type="text/javascript">
+                    var chartDom = document.getElementById('graph-eps');
+                    var myChart = echarts.init(chartDom);
+
+                    myChart.setOption({
+                        color: ['#2c664f', '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+                        tooltip: { trigger: 'axis' },
+                        toolbox: {
+                            feature: {
+                                dataZoom: { yAxisIndex: 'none' },
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        dataZoom: [
+                            {
+                                type: 'inside',
+                                start: 0,
+                                end: 100,
+                                fillerColor: 'rgba(34, 80, 61, 0.25)',
+                                selectedDataBackground: {
+                                    lineStyle: { color: '#2c664f' },
+                                    areaStyle: { color: '#378063' }
+                                }
+                            },
+                            {
+                                start: 0,
+                                end: 100,
+                                fillerColor: 'rgba(34, 80, 61, 0.25)',
+                                selectedDataBackground: {
+                                    lineStyle: { color: '#2c664f' },
+                                    areaStyle: { color: '#378063' }
+                                }
+                            },
+                        ],
+                        xAxis: { type: 'time' },
+                        yAxis: {
+                            name: 'Errors #',
+                            nameLocation: 'center',
+                            nameRotate: 90,
+                            nameGap: 45,
+                            type: 'value'
+                        },
+                        legend: {
+                            type: 'plain',
+                            width: '75%',
+                            data: ["Total","GET get_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]","GET download_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]"],
+                        },
+                        series: [
+                            {
+                                name: 'Total',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                lineStyle: { color: '#2c664f' },
+                                areaStyle: { color: '#378063' },
+                                markArea: {
+                                    data: [
+                                        [
+                            {
+                                xAxis: '2025-12-19 02:17:09',
+                                itemStyle: { borderColor: 'rgba(44, 102, 79, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:09'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:17:09',
+                                itemStyle: { color: 'rgba(44, 102, 79, 0.05)' },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:16'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:17:16',
+                                itemStyle: { borderColor: 'rgba(44, 102, 79, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:17:16'
+                            }
+                        ],[
+                            {
+                                xAxis: '2025-12-19 02:22:17',
+                                itemStyle: { borderColor: 'rgba(179, 65, 65, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:17'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:22:17',
+                                itemStyle: { color: 'rgba(179, 65, 65, 0.05)' },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:36'
+                            }
+                        ],
+                        [
+                            {
+                                xAxis: '2025-12-19 02:22:36',
+                                itemStyle: { borderColor: 'rgba(179, 65, 65, 0.25)', borderWidth: 1 },
+                            },
+                            {
+                                xAxis: '2025-12-19 02:22:36'
+                            }
+                        ],
+                                    ]
+                                },
+                                data: [["2025-12-19 02:18:50",6],["2025-12-19 02:18:51",2],["2025-12-19 02:18:53",2],["2025-12-19 02:20:35",6],["2025-12-19 02:20:36",2],["2025-12-19 02:20:37",2]],
+                            },
+                            {
+                                name: 'GET get_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:50",3],["2025-12-19 02:18:51",1],["2025-12-19 02:18:53",1],["2025-12-19 02:20:35",3],["2025-12-19 02:20:36",1],["2025-12-19 02:20:37",1]],
+                            },
+                        {
+                                name: 'GET download_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]',
+                                type: 'line',
+                                symbol: 'none',
+                                sampling: 'lttb',
+                                data: [["2025-12-19 02:18:50",3],["2025-12-19 02:18:51",1],["2025-12-19 02:18:53",1],["2025-12-19 02:20:35",3],["2025-12-19 02:20:36",1],["2025-12-19 02:20:37",1]],
+                            },
+                        
+                        ]
+                    });
+                </script>
+            </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th colspan="3">Error</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+        <td>10 (0)</td>
+        <td colspan="4">404 Not Found: download_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]</strong></td>
+    </tr>
+<tr>
+        <td>10 (0)</td>
+        <td colspan="4">404 Not Found: get_advisory[24ae57c3-4b57-4…2c1-83ae26059a89]</strong></td>
+    </tr>
+            </tbody>
+        </table>
+    </div>
+
+    </div>
+</body>
+</html>
