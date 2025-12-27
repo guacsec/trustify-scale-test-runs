@@ -8,7 +8,7 @@ RUN dnf install -y zlib openssl-devel git gcc
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain 1.90.0
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain 1.91.0
 
 ARG rev
 RUN ["bash", "-c", "\
