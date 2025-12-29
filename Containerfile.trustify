@@ -1,10 +1,12 @@
-FROM registry.access.redhat.com/ubi9/ubi:latest
+FROM registry.access.redhat.com/ubi9/ubi:latest AS builder
 
-RUN uname -m
-
-RUN mkdir /stage
-
-RUN dnf install -y zlib openssl-devel git gcc
+RUN uname -m && \
+    dnf install -y --setopt=install_weak_deps=False \
+        zlib \
+        openssl-devel \
+        git \
+        gcc && \
+    dnf clean all
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
@@ -12,7 +14,7 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain 1.91.0
 
 ARG rev
 RUN ["bash", "-c", "\
-    git clone https://github.com/guacsec/trustify ; \
+    git clone https://github.com/guacsec/trustify --depth 50 ; \
     if [[ -n \"$rev\" ]]; then \
         cd trustify ; \
         # update the fetch configuration for the origin remote, instructing Git to fetch pull request data: \
@@ -20,13 +22,20 @@ RUN ["bash", "-c", "\
         # refs/remotes/origin/pr/* tells Git to store these heads in a local ref path that can be checked out easily by PR number \
         git config --add remote.origin.fetch \"+refs/pull/*/head:refs/remotes/origin/pr/*\" ; \
         # pull all PR data into local repository under the refs specified above \
-        git fetch origin ; \
+        git fetch origin --depth 50 ; \
         # leveraging the configuration above, 'rev' can be a branch name, commit digest or a PR number (in the format pr/<PR_number>, e.g. pr/1573) \
         git checkout \"$rev\" ; \
-    fi \
+    fi && \
+    cd trustify && \
+    cargo build --release --no-default-features --features bundled \
 "]
 
-RUN cd trustify && cargo build --release --no-default-features --features bundled
-RUN install trustify/target/release/trustd /usr/local/bin/trustd
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
+
+RUN microdnf install -y --setopt=install_weak_deps=0 \
+        openssl && \
+    microdnf clean all
+
+COPY --from=builder /trustify/target/release/trustd /usr/local/bin/trustd
 
 ENTRYPOINT ["/usr/local/bin/trustd"]
