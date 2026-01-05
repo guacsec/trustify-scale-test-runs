@@ -1,20 +1,27 @@
-FROM registry.access.redhat.com/ubi9/ubi:latest
+FROM registry.access.redhat.com/ubi9/ubi:latest as builder
 
-RUN uname -m
-
-RUN mkdir /stage
-
-RUN dnf install -y zlib openssl-devel git gcc
+RUN uname -m && \
+    dnf install -y --setopt=install_weak_deps=False \
+        zlib \
+        openssl-devel \
+        git \
+        gcc && \
+    dnf clean all
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain 1.91.0
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain 1.91.0 && \
+    git clone https://github.com/trustification/scale-testing --depth 1 && \
+    cd scale-testing && \
+    cargo build --release --bin loadtest
 
-RUN git clone https://github.com/trustification/scale-testing --depth 1
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
 
-RUN cd scale-testing && cargo build --release --bin loadtest
-RUN install scale-testing/target/release/loadtest /usr/local/bin/loadtest
+RUN microdnf install -y --setopt=install_weak_deps=0 \
+        openssl && \
+    microdnf clean all
 
+COPY --from=builder /scale-testing/target/release/loadtest /usr/local/bin/loadtest
 COPY scenarios/ /usr/local/share/scenarios
 
 ENTRYPOINT ["/usr/local/bin/loadtest"]
