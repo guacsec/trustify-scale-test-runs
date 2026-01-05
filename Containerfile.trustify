@@ -25,10 +25,10 @@ RUN ["bash", "-c", "\
         git fetch origin ; \
         # leveraging the configuration above, 'rev' can be a branch name, commit digest or a PR number (in the format pr/<PR_number>, e.g. pr/1573) \
         git checkout \"$rev\" ; \
-    fi && \
-    cd trustify && \
-    cargo build --release --no-default-features --features bundled \
+    fi \
 "]
+
+RUN cd trustify && cargo build --release --no-default-features --features bundled
 
 FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
 
