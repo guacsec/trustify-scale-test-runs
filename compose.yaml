@@ -180,6 +180,7 @@ services:
       WAIT_TIME_FROM: "0"
       WAIT_TIME_TO: "0"
       SCENARIO_FILE: "/usr/local/share/scenarios/full-20250604.json5"
+      HOST: "http://trustify:8080"
     volumes:
       - ./report:/report:z
       - ./baseline:/baseline:z
@@ -199,4 +200,4 @@ services:
       - --baseline-file
       - /baseline/baseline.json
       - --scenarios
-      - RestAPIUser,RestAPIUserSlow,RestAPIUserDelete
+      - RestAPIUser,RestAPIUserSlow,RestAPIUserDelete,RestAdvisoryLableUser
