@@ -10,7 +10,7 @@ RUN uname -m && \
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain 1.91.0 && \
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain 1.92.0 && \
     git clone https://github.com/trustification/scale-testing --depth 1 && \
     cd scale-testing && \
     cargo build --release --bin loadtest
