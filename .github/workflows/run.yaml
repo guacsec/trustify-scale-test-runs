@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 1 * * *"
+  pull_request:
 
 concurrency:
   group: "run"
@@ -120,16 +121,23 @@ jobs:
           git add -A -- publish
           git commit -m "Automatic update ($GITHUB_RUN_ID/$GITHUB_RUN_NUMBER)"
 
+      - name: Push test results
+        if: github.event_name != 'pull_request'
+        run: |
+          cd repo
           git push
 
       - name: Setup Pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: repo/publish
 
       - name: Deploy to GitHub Pages
+        if: github.event_name != 'pull_request'
         id: deployment
         uses: actions/deploy-pages@v4
