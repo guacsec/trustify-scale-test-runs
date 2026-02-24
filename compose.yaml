@@ -8,6 +8,8 @@
 # loadtests.
 #
 
+x-dump-timestamp: &dump-timestamp "20260212T154815"
+
 services:
   postgres:
     image: docker.io/library/postgres:17
@@ -34,7 +36,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.3
-    command: ["start-dev"]
+    command: [ "start-dev" ]
     environment:
       - KC_DB=dev-file
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
@@ -81,13 +83,62 @@ services:
     entrypoint: /usr/bin/bash
     command: /init-sso/init.sh
 
+  download-dumps:
+    image: registry.access.redhat.com/ubi10/ubi:latest
+    environment:
+      DUMP_TIMESTAMP: *dump-timestamp
+    volumes:
+      - trustify-cache:/cache:z
+    command:
+      - bash
+      - -exc
+      - |
+        set -euo pipefail
+
+        mkdir -p /cache
+
+        if [ ! -s /cache/dump.tar ]; then
+          echo "Downloading dump.tar..."
+          curl --retry 50 --retry-max-time 3600 -sSL "https://trustify-dumps.s3.eu-west-1.amazonaws.com/$${DUMP_TIMESTAMP}Z/dump.tar" -o /cache/dump.tar
+        else
+          echo "Using cached dump.tar"
+        fi
+
+        if [ ! -s /cache/dump.sql.gz ]; then
+          echo "Downloading dump.sql.gz..."
+          curl --retry 50 --retry-max-time 3600 -sSL "https://trustify-dumps.s3.eu-west-1.amazonaws.com/$${DUMP_TIMESTAMP}Z/dump.sql.gz" -o /cache/dump.sql.gz
+        else
+          echo "Using cached dump.sql.gz"
+        fi
+
+  init-storage:
+    depends_on:
+      download-dumps:
+        condition: service_completed_successfully
+    image: registry.access.redhat.com/ubi10/ubi:latest
+    volumes:
+      - trustify-data:/data:z
+      - trustify-cache:/cache:z
+    command:
+      - bash
+      - -exc
+      - |
+        # skip extraction if /data is already populated, to allow re-running generate-scenario
+        if [ -n "$(ls -A /data 2>/dev/null)" ]; then
+          echo "Storage already populated, skipping extraction"
+        else
+          tar --strip-components=5 -xvf /cache/dump.tar -C /data
+        fi
+
   replay-dump:
     depends_on:
       postgres:
         condition: service_healthy
-
+      download-dumps:
+        condition: service_completed_successfully
     image: docker.io/library/postgres:17
-
+    volumes:
+      - trustify-cache:/cache:z
     environment:
       PGUSER: postgres
       PGPASSWORD: eggs
@@ -97,20 +148,22 @@ services:
       - bash
       - -exc
       - |
-        echo "Installing curl"
+        set -euo pipefail
 
-        apt-get update
-        env DEBIAN_FRONTEND=noninteractive apt-get install curl -y
-
-        echo "Importing dump"
-        # align with the SCENARIO_FILE variable below
-        curl --retry 50 --retry-max-time 3600 -sSL https://trustify-dumps.s3.eu-west-1.amazonaws.com/20250604T002104Z/dump.sql.gz -o dump.sql.gz
-        zcat dump.sql.gz | psql -v ON_ERROR_STOP=1
-        echo "VACUUM ANALYZE; REINDEX database trustify;" | psql
+        # skip import if DB is already populated, to allow re-running generate-scenario
+        if psql -tAc "SELECT 1 FROM information_schema.tables WHERE table_name='sbom' LIMIT 1" | grep -q 1; then
+          echo "Database already populated, skipping import"
+        else
+          echo "Importing dump"
+          zcat /cache/dump.sql.gz | psql -v ON_ERROR_STOP=1
+          echo "VACUUM ANALYZE; REINDEX database trustify;" | psql
+        fi
 
   trustify-migrate:
     depends_on:
       replay-dump:
+        condition: service_completed_successfully
+      init-storage:
         condition: service_completed_successfully
     build:
       dockerfile: ./Containerfile.trustify
@@ -120,6 +173,9 @@ services:
       TRUSTD_DB_PASSWORD: eggs
       TRUSTD_DB_HOST: postgres
       TRUSTD_DB_NAME: trustify
+      TRUSTD_STORAGE_FS_PATH: /data
+    volumes:
+      - trustify-data:/data:z
     command:
       - db
       - migrate
@@ -132,6 +188,8 @@ services:
         condition: service_completed_successfully
       replay-dump:
         condition: service_completed_successfully
+      init-storage:
+        condition: service_completed_successfully
 
     build:
       dockerfile: ./Containerfile.trustify
@@ -141,6 +199,7 @@ services:
       TRUSTD_DB_PASSWORD: eggs
       TRUSTD_DB_HOST: postgres
       TRUSTD_DB_NAME: trustify
+      TRUSTD_STORAGE_FS_PATH: /data
       RUST_LOG: info
       NO_COLOR: "true"
       INFRASTRUCTURE_ENABLED: "true"
@@ -154,6 +213,8 @@ services:
       timeout: 5s
       retries: 20
       start_period: 10s
+    volumes:
+      - trustify-data:/data:z
     command:
       - api
     ports:
@@ -167,6 +228,33 @@ services:
           cpus: "3"
           memory: "2G"
 
+  generate-scenario:
+    depends_on:
+      replay-dump:
+        condition: service_completed_successfully
+      trustify-migrate:
+        condition: service_completed_successfully
+    build:
+      dockerfile: ./Containerfile.loadtests
+    environment:
+      GENERATE_SCENARIO: true
+      DATABASE_URL: postgresql://postgres:eggs@postgres:5432/trustify # notsecret
+
+  db-shell:
+    depends_on:
+      replay-dump:
+        condition: service_completed_successfully
+      trustify-migrate:
+        condition: service_completed_successfully
+    image: docker.io/library/postgres:17
+    environment:
+      PGUSER: postgres
+      PGPASSWORD: eggs
+      PGHOST: postgres
+      PGDATABASE: trustify
+    command:
+      - psql
+
   loadtests:
     depends_on:
       trustify:
@@ -179,24 +267,24 @@ services:
       CLIENT_SECRET: R8A6KFeyxJsMDBhjfHbpZTIF0GWt43HP # notsecret
       WAIT_TIME_FROM: "0"
       WAIT_TIME_TO: "0"
-      SCENARIO_FILE: "/usr/local/share/scenarios/full-20250604.json5"
+      DUMP_TIMESTAMP: *dump-timestamp
     volumes:
       - ./report:/report:z
       - ./baseline:/baseline:z
+    entrypoint: [ "/bin/sh", "-c" ]
     command:
-      - --host
-      - http://trustify:8080
-      - -u
-      - "7"
-      - --run-time
-      - "5m"
-      - --report-file
-      - /report/report.html
-      - --report-file
-      - /report/report.json
-      - --report-file
-      - /report/report.md
-      - --baseline-file
-      - /baseline/baseline.json
-      - --scenarios
-      - RestAPIUser,RestAPIUserSlow,RestAPIUserDelete
+      - |
+        env SCENARIO_FILE="/usr/local/share/scenarios/full-$${DUMP_TIMESTAMP}.json5" \
+        /usr/local/bin/loadtest \
+          --host http://trustify:8080 \
+          -u 7 \
+          --run-time 5m \
+          --report-file /report/report.html \
+          --report-file /report/report.json \
+          --report-file /report/report.md \
+          --baseline-file /baseline/baseline.json \
+          --scenarios RestAPIUser,RestAPIUserSlow,RestAPIUserDelete
+
+volumes:
+  trustify-data:
+  trustify-cache:

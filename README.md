@@ -28,6 +28,12 @@ After the test has run, clean up:
 podman compose -f compose.yaml down
 ```
 
+Some of the large files are cached in a volume, it is possible to delete those volumes as well using:
+
+```bash
+podman compose -f compose.yaml down -v
+```
+
 ## Wait, there is more
 
 ### Start a DB instance with an imported dump
@@ -37,6 +43,13 @@ To start up a database instance with the imported dump, run the following comman
 ```bash
 podman compose -f compose.yaml build
 podman compose -f compose.yaml up trustify-migrate
+```
+
+### Connect a `psql` terminal to the database
+
+```bash
+podman compose -f compose.yaml build
+podman compose -f compose.yaml up db-shell
 ```
 
 ## Excluding Bad Reports
