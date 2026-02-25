@@ -1,832 +1,984 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trustify Load Test Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/date-fns@3.0.0/index.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trustify Load Test Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/date-fns@4.1.0/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #f5f5f5;
-            color: #333;
-            padding: 20px;
-        }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      padding: 20px;
+    }
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-        .header h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
 
-        .header p {
-            opacity: 0.9;
-            font-size: 16px;
-        }
+    .header p {
+      opacity: 0.9;
+      font-size: 16px;
+    }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
 
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-        }
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
 
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
 
-        .stat-card .label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+    .stat-card .label {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
-        .stat-card .value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #667eea;
-        }
+    .stat-card .value {
+      font-size: 32px;
+      font-weight: bold;
+      color: #667eea;
+    }
 
-        .stat-card .trend {
-            font-size: 14px;
-            margin-top: 5px;
-        }
+    .stat-card .trend {
+      font-size: 14px;
+      margin-top: 5px;
+    }
 
-        .trend.up {
-            color: #f56565;
-        }
+    .trend.up {
+      color: #f56565;
+    }
 
-        .trend.down {
-            color: #48bb78;
-        }
+    .trend.down {
+      color: #48bb78;
+    }
 
-        .chart-container {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+    .chart-container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-        .chart-container h2 {
-            margin-bottom: 20px;
-            color: #333;
-            font-size: 20px;
-        }
+    .chart-container h2 {
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 20px;
+    }
 
-        .chart-wrapper {
-            position: relative;
-            height: 400px;
-        }
+    .chart-wrapper {
+      position: relative;
+      height: 400px;
+    }
 
-        .date-range-selector {
-            background: white;
-            padding: 15px 30px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+    .date-range-selector {
+      background: white;
+      padding: 15px 30px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
 
-        .date-range-selector label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-        }
+    .date-range-selector label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
 
-        .date-range-selector select {
-            padding: 8px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 5px;
-            font-size: 14px;
-            background: white;
-            cursor: pointer;
-            transition: border-color 0.2s;
-            min-width: 150px;
-        }
+    .date-range-selector select {
+      padding: 8px 15px;
+      border: 2px solid #e2e8f0;
+      border-radius: 5px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      min-width: 150px;
+    }
 
-        .date-range-selector select:hover {
-            border-color: #667eea;
-        }
+    .date-range-selector select:hover {
+      border-color: #667eea;
+    }
 
-        .date-range-selector select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
+    .date-range-selector select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
 
-        .controls {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
 
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
 
-        .control-group label {
-            font-size: 12px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+    .control-group label {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
-        .control-group select {
-            padding: 10px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 5px;
-            font-size: 14px;
-            background: white;
-            cursor: pointer;
-            transition: border-color 0.2s;
-        }
+    .control-group select {
+      padding: 10px 15px;
+      border: 2px solid #e2e8f0;
+      border-radius: 5px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
 
-        .control-group select:hover {
-            border-color: #667eea;
-        }
+    .control-group select:hover {
+      border-color: #667eea;
+    }
 
-        .control-group select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
+    .control-group select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            font-size: 18px;
-            color: #666;
-        }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      font-size: 18px;
+      color: #666;
+    }
 
-        .error {
-            background: #fff5f5;
-            border: 2px solid #fc8181;
-            color: #c53030;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
+    .error {
+      background: #fff5f5;
+      border: 2px solid #fc8181;
+      color: #c53030;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
 
-        .endpoint-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
+    .endpoint-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
 
-        .endpoint-card {
-            background: #f7fafc;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-        }
+    .endpoint-card {
+      background: #f7fafc;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
 
-        .endpoint-card .endpoint-name {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #2d3748;
-        }
+    .endpoint-card .endpoint-name {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #2d3748;
+    }
 
-        .endpoint-card .endpoint-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            color: #666;
-        }
-    </style>
+    .endpoint-card .endpoint-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .markers-legend {
+      background: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .markers-legend-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .markers-legend-header h3 {
+      font-size: 16px;
+      color: #333;
+      margin: 0;
+    }
+
+    .markers-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .markers-toggle input[type="checkbox"] {
+      cursor: pointer;
+      width: 15px;
+      height: 15px;
+    }
+
+    .markers-legend-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .marker-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #444;
+    }
+
+    .marker-legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Trustify Load Test Dashboard</h1>
-        <p>Performance trends and metrics over time</p>
-    </div>
+<div class="header">
+  <h1>Trustify Load Test Dashboard</h1>
+  <p>Performance trends and metrics over time</p>
+</div>
 
-    <div class="date-range-selector">
-        <label for="dateRangeSelect">Time Range:</label>
-        <select id="dateRangeSelect">
-            <option value="all">All Time</option>
-            <option value="3months">Last 3 Months</option>
-            <option value="1month">Last Month</option>
-            <option value="1week">Last Week</option>
+<div class="date-range-selector">
+  <label for="dateRangeSelect">Time Range:</label>
+  <select id="dateRangeSelect">
+    <option value="all">All Time</option>
+    <option value="3months">Last 3 Months</option>
+    <option value="1month">Last Month</option>
+    <option value="1week">Last Week</option>
+  </select>
+</div>
+
+<div id="markersLegend" class="markers-legend" style="display: none;">
+  <div class="markers-legend-header">
+    <h3>Event Markers</h3>
+    <label class="markers-toggle">
+      <input type="checkbox" id="markersToggle" checked>
+      Show markers
+    </label>
+  </div>
+  <div id="markersLegendItems" class="markers-legend-items"></div>
+</div>
+
+<div id="loading" class="loading">Loading test data...</div>
+<div id="error" class="error" style="display: none;"></div>
+
+<div id="content" style="display: none;">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="label">Total Test Runs</div>
+      <div class="value" id="totalRuns">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Latest Avg Response Time</div>
+      <div class="value" id="latestAvgTime">-</div>
+      <div class="trend" id="avgTimeTrend"></div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Total Requests (Latest)</div>
+      <div class="value" id="totalRequests">-</div>
+      <div class="trend" id="requestsTrend"></div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Endpoints Tested</div>
+      <div class="value" id="endpointCount">-</div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <h2>Response Time Trends</h2>
+    <div class="chart-wrapper">
+      <canvas id="responseTimeChart"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <h2>Request Volume Over Time</h2>
+    <div class="chart-wrapper">
+      <canvas id="requestVolumeChart"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <h2>Selected Endpoint Performance</h2>
+    <div class="controls">
+      <div class="control-group">
+        <label for="endpointSelect">Select Endpoint</label>
+        <select id="endpointSelect">
+          <option value="Aggregated">All Endpoints (Aggregated)</option>
         </select>
+      </div>
+      <div class="control-group">
+        <label for="metricSelect">Select Metric</label>
+        <select id="metricSelect">
+          <option value="response_time_average">Average Response Time</option>
+          <option value="response_time_minimum">Minimum Response Time</option>
+          <option value="response_time_maximum">Maximum Response Time</option>
+          <option value="number_of_requests">Number of Requests</option>
+          <option value="requests_per_second">Requests Per Second</option>
+        </select>
+      </div>
     </div>
-
-    <div id="loading" class="loading">Loading test data...</div>
-    <div id="error" class="error" style="display: none;"></div>
-
-    <div id="content" style="display: none;">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="label">Total Test Runs</div>
-                <div class="value" id="totalRuns">-</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">Latest Avg Response Time</div>
-                <div class="value" id="latestAvgTime">-</div>
-                <div class="trend" id="avgTimeTrend"></div>
-            </div>
-            <div class="stat-card">
-                <div class="label">Total Requests (Latest)</div>
-                <div class="value" id="totalRequests">-</div>
-                <div class="trend" id="requestsTrend"></div>
-            </div>
-            <div class="stat-card">
-                <div class="label">Endpoints Tested</div>
-                <div class="value" id="endpointCount">-</div>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <h2>Response Time Trends</h2>
-            <div class="chart-wrapper">
-                <canvas id="responseTimeChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <h2>Request Volume Over Time</h2>
-            <div class="chart-wrapper">
-                <canvas id="requestVolumeChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <h2>Selected Endpoint Performance</h2>
-            <div class="controls">
-                <div class="control-group">
-                    <label for="endpointSelect">Select Endpoint</label>
-                    <select id="endpointSelect">
-                        <option value="Aggregated">All Endpoints (Aggregated)</option>
-                    </select>
-                </div>
-                <div class="control-group">
-                    <label for="metricSelect">Select Metric</label>
-                    <select id="metricSelect">
-                        <option value="response_time_average">Average Response Time</option>
-                        <option value="response_time_minimum">Minimum Response Time</option>
-                        <option value="response_time_maximum">Maximum Response Time</option>
-                        <option value="number_of_requests">Number of Requests</option>
-                        <option value="requests_per_second">Requests Per Second</option>
-                    </select>
-                </div>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="endpointChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <h2>Top 10 Slowest Endpoints (Latest Run)</h2>
-            <div class="chart-wrapper">
-                <canvas id="slowestEndpointsChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <h2>All Endpoints Overview</h2>
-            <div id="endpointsList" class="endpoint-list"></div>
-        </div>
+    <div class="chart-wrapper">
+      <canvas id="endpointChart"></canvas>
     </div>
+  </div>
 
-    <script>
-        let allReports = [];
-        let filteredReports = [];
-        let charts = {};
+  <div class="chart-container">
+    <h2>Top 10 Slowest Endpoints (Latest Run)</h2>
+    <div class="chart-wrapper">
+      <canvas id="slowestEndpointsChart"></canvas>
+    </div>
+  </div>
 
-        // Get filtered reports based on selected date range
-        function getFilteredReports() {
-            const dateRange = document.getElementById('dateRangeSelect').value;
+  <div class="chart-container">
+    <h2>All Endpoints Overview</h2>
+    <div id="endpointsList" class="endpoint-list"></div>
+  </div>
+</div>
 
-            if (dateRange === 'all' || allReports.length === 0) {
-                return allReports;
+<script>
+  let allReports = [];
+  let filteredReports = [];
+  let charts = {};
+  let allMarkers = [];
+  let markersVisible = true;
+
+  const DEFAULT_MARKER_COLORS = [
+    '#e53e3e', '#dd6b20', '#d69e2e', '#38a169',
+    '#3182ce', '#805ad5', '#d53f8c', '#00b5d8'
+  ];
+
+  function getMarkerColor(marker, index) {
+    return marker.color || DEFAULT_MARKER_COLORS[index % DEFAULT_MARKER_COLORS.length];
+  }
+
+  function buildAnnotations(labels) {
+    const annotations = {};
+    if (!markersVisible) return annotations;
+    allMarkers.forEach((marker, i) => {
+      const markerDate = new Date(marker.date);
+      const idx = labels.findIndex(label => {
+        const d = new Date(label.replace(' ', 'T'));
+        return d >= markerDate;
+      });
+      if (idx === -1) return;
+      const color = getMarkerColor(marker, i);
+      annotations[`marker_${i}`] = {
+        type: 'line',
+        xMin: idx,
+        xMax: idx,
+        borderColor: color,
+        borderWidth: 2,
+        borderDash: [6, 3],
+        label: {
+          display: true,
+          content: marker.label,
+          position: 'start',
+          backgroundColor: color,
+          color: '#fff',
+          font: {size: 11},
+          padding: {x: 4, y: 2},
+          rotation: -90,
+          yAdjust: -4,
+        }
+      };
+    });
+    return annotations;
+  }
+
+  function updateMarkersLegend() {
+    const legend = document.getElementById('markersLegend');
+    const items = document.getElementById('markersLegendItems');
+    if (allMarkers.length === 0) {
+      legend.style.display = 'none';
+      return;
+    }
+    legend.style.display = 'block';
+    items.innerHTML = allMarkers.map((marker, i) => {
+      const color = getMarkerColor(marker, i);
+      return `<div class="marker-legend-item">
+                    <div class="marker-legend-color" style="background:${color};"></div>
+                    <span><strong>${marker.label}</strong> &mdash; ${marker.date}</span>
+                </div>`;
+    }).join('');
+  }
+
+  // Get filtered reports based on selected date range
+  function getFilteredReports() {
+    const dateRange = document.getElementById('dateRangeSelect').value;
+
+    if (dateRange === 'all' || allReports.length === 0) {
+      return allReports;
+    }
+
+    // Calculate the cutoff date based on the latest report
+    const latestTimestamp = allReports[allReports.length - 1].timestamp;
+    const cutoffDate = new Date(latestTimestamp);
+
+    switch (dateRange) {
+      case '1week':
+        cutoffDate.setDate(cutoffDate.getDate() - 7);
+        break;
+      case '1month':
+        cutoffDate.setMonth(cutoffDate.getMonth() - 1);
+        break;
+      case '3months':
+        cutoffDate.setMonth(cutoffDate.getMonth() - 3);
+        break;
+    }
+
+    return allReports.filter(report => report.timestamp >= cutoffDate);
+  }
+
+  // Refresh all charts and stats with current filter
+  function refreshDashboard() {
+    filteredReports = getFilteredReports();
+
+    if (filteredReports.length === 0) {
+      console.warn('No reports match the selected date range');
+      return;
+    }
+
+    updateSummaryStats();
+    populateEndpointDropdown();
+    updateResponseTimeChart();
+    updateRequestVolumeChart();
+    updateEndpointChart();
+    updateSlowestEndpointsChart();
+    updateEndpointsList();
+  }
+
+  // Fetch all report files
+  async function loadReports() {
+    try {
+      // Fetch markers (optional, ignore if not found)
+      try {
+        const markersResponse = await fetch('markers.json');
+        if (markersResponse.ok) {
+          allMarkers = await markersResponse.json();
+        }
+      } catch (_) {
+      }
+
+      updateMarkersLegend();
+
+      // Fetch the manifest file that lists all report files
+      const manifestResponse = await fetch('manifest.json');
+      const manifest = await manifestResponse.json();
+
+      // Fetch all JSON files listed in the manifest
+      const reportPromises = manifest.reports.map(async (reportPath) => {
+        const response = await fetch(reportPath);
+        const data = await response.json();
+        // Extract date from filename: report-2024-08-05T11-10-42.json
+        const filename = reportPath.split('/').pop();
+        const match = filename.match(/report-(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})-(\d{2})/);
+        if (!match) {
+          console.error('Failed to parse filename:', filename);
+          return null;
+        }
+        // Format: YYYY-MM-DD HH:MM:SS (each file is unique)
+        const dateStr = `${match[1]}-${match[2]}-${match[3]} ${match[4]}:${match[5]}:${match[6]}`;
+        const timestamp = new Date(`${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}`);
+
+        return {
+          filename,
+          date: dateStr,
+          timestamp: timestamp,
+          data
+        };
+      });
+
+      allReports = await Promise.all(reportPromises);
+      // Filter out any failed parses
+      allReports = allReports.filter(r => r !== null);
+      allReports.sort((a, b) => a.timestamp - b.timestamp);
+
+      console.log(`Loaded ${allReports.length} reports`);
+
+      // Initialize filtered reports to all reports
+      filteredReports = allReports;
+
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+
+      initializeDashboard();
+    } catch (error) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('error').textContent = `Error loading reports: ${error.message}`;
+      console.error('Error loading reports:', error);
+    }
+  }
+
+  function initializeDashboard() {
+    if (allReports.length === 0) return;
+
+    // Update summary stats
+    updateSummaryStats();
+
+    // Populate endpoint dropdown
+    populateEndpointDropdown();
+
+    // Create charts
+    createResponseTimeChart();
+    createRequestVolumeChart();
+    createEndpointChart();
+    createSlowestEndpointsChart();
+    updateEndpointsList();
+
+    // Add event listeners
+    document.getElementById('dateRangeSelect').addEventListener('change', refreshDashboard);
+    document.getElementById('endpointSelect').addEventListener('change', updateEndpointChart);
+    document.getElementById('metricSelect').addEventListener('change', updateEndpointChart);
+    document.getElementById('markersToggle').addEventListener('change', function () {
+      markersVisible = this.checked;
+      refreshDashboard();
+    });
+  }
+
+  function updateSummaryStats() {
+    const latest = filteredReports[filteredReports.length - 1].data;
+    const previous = filteredReports.length > 1 ? filteredReports[filteredReports.length - 2].data : null;
+
+    // Total runs
+    document.getElementById('totalRuns').textContent = filteredReports.length;
+
+    // Latest avg response time
+    const aggregated = latest.raw_request_metrics?.find(m => m.name === 'Aggregated');
+    if (aggregated) {
+      const avgTime = aggregated.response_time_average.value.toFixed(2);
+      document.getElementById('latestAvgTime').textContent = `${avgTime}ms`;
+
+      const delta = aggregated.response_time_average.delta;
+      const trendEl = document.getElementById('avgTimeTrend');
+      if (delta !== undefined && delta !== 0) {
+        trendEl.textContent = `${delta > 0 ? '↑' : '↓'} ${Math.abs(delta).toFixed(2)}ms`;
+        trendEl.className = `trend ${delta > 0 ? 'up' : 'down'}`;
+      }
+    }
+
+    // Total requests
+    if (aggregated) {
+      const requests = aggregated.number_of_requests.value;
+      document.getElementById('totalRequests').textContent = requests.toLocaleString();
+
+      const delta = aggregated.number_of_requests.delta;
+      const trendEl = document.getElementById('requestsTrend');
+      if (delta !== undefined && delta !== 0) {
+        trendEl.textContent = `${delta > 0 ? '↑' : '↓'} ${Math.abs(delta)}`;
+        // For requests: up is good (green/down), down is bad (red/up) - inverted from response times
+        trendEl.className = `trend ${delta > 0 ? 'down' : 'up'}`;
+      }
+    }
+
+    // Endpoint count
+    const endpointCount = (latest.raw_request_metrics?.length || 1) - 1; // Exclude Aggregated
+    document.getElementById('endpointCount').textContent = endpointCount;
+  }
+
+  function populateEndpointDropdown() {
+    const latest = filteredReports[filteredReports.length - 1].data;
+    const endpoints = latest.raw_request_metrics
+        .filter(m => m.name !== 'Aggregated')
+        .map(m => ({method: m.method, name: m.name}))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+    const select = document.getElementById('endpointSelect');
+    // Clear existing options except the first one (Aggregated)
+    while (select.options.length > 1) {
+      select.remove(1);
+    }
+
+    endpoints.forEach(ep => {
+      const option = document.createElement('option');
+      option.value = ep.name;
+      option.textContent = `${ep.method} ${ep.name}`;
+      select.appendChild(option);
+    });
+  }
+
+  function createResponseTimeChart() {
+    const ctx = document.getElementById('responseTimeChart').getContext('2d');
+    charts.responseTime = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Average Response Time (ms)',
+          data: [],
+          borderColor: '#667eea',
+          backgroundColor: 'rgba(102, 126, 234, 0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false
+          },
+          annotation: {annotations: {}}
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Response Time (ms)'
             }
-
-            // Calculate the cutoff date based on the latest report
-            const latestTimestamp = allReports[allReports.length - 1].timestamp;
-            const cutoffDate = new Date(latestTimestamp);
-
-            switch (dateRange) {
-                case '1week':
-                    cutoffDate.setDate(cutoffDate.getDate() - 7);
-                    break;
-                case '1month':
-                    cutoffDate.setMonth(cutoffDate.getMonth() - 1);
-                    break;
-                case '3months':
-                    cutoffDate.setMonth(cutoffDate.getMonth() - 3);
-                    break;
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Test Run Date'
             }
-
-            return allReports.filter(report => report.timestamp >= cutoffDate);
+          }
         }
+      }
+    });
+    updateResponseTimeChart();
+  }
 
-        // Refresh all charts and stats with current filter
-        function refreshDashboard() {
-            filteredReports = getFilteredReports();
+  function updateResponseTimeChart() {
+    if (!charts.responseTime) return;
 
-            if (filteredReports.length === 0) {
-                console.warn('No reports match the selected date range');
-                return;
+    const labels = filteredReports.map(r => r.date);
+    const aggregatedData = filteredReports.map(r => {
+      const agg = r.data.raw_request_metrics?.find(m => m.name === 'Aggregated');
+      return agg ? agg.response_time_average.value : null;
+    });
+
+    charts.responseTime.data.labels = labels;
+    charts.responseTime.data.datasets[0].data = aggregatedData;
+    charts.responseTime.options.plugins.annotation.annotations = buildAnnotations(labels);
+    charts.responseTime.update();
+  }
+
+  function createRequestVolumeChart() {
+    const ctx = document.getElementById('requestVolumeChart').getContext('2d');
+    charts.requestVolume = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Total Requests',
+          data: [],
+          backgroundColor: 'rgba(72, 187, 120, 0.7)',
+          borderColor: '#48bb78',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          },
+          annotation: {annotations: {}}
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Number of Requests'
             }
-
-            updateSummaryStats();
-            populateEndpointDropdown();
-            updateResponseTimeChart();
-            updateRequestVolumeChart();
-            updateEndpointChart();
-            updateSlowestEndpointsChart();
-            updateEndpointsList();
-        }
-
-        // Fetch all report files
-        async function loadReports() {
-            try {
-                // Fetch the manifest file that lists all report files
-                const manifestResponse = await fetch('manifest.json');
-                const manifest = await manifestResponse.json();
-
-                // Fetch all JSON files listed in the manifest
-                const reportPromises = manifest.reports.map(async (reportPath) => {
-                    const response = await fetch(reportPath);
-                    const data = await response.json();
-                    // Extract date from filename: report-2024-08-05T11-10-42.json
-                    const filename = reportPath.split('/').pop();
-                    const match = filename.match(/report-(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})-(\d{2})/);
-                    if (!match) {
-                        console.error('Failed to parse filename:', filename);
-                        return null;
-                    }
-                    // Format: YYYY-MM-DD HH:MM:SS (each file is unique)
-                    const dateStr = `${match[1]}-${match[2]}-${match[3]} ${match[4]}:${match[5]}:${match[6]}`;
-                    const timestamp = new Date(`${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}`);
-
-                    return {
-                        filename,
-                        date: dateStr,
-                        timestamp: timestamp,
-                        data
-                    };
-                });
-
-                allReports = await Promise.all(reportPromises);
-                // Filter out any failed parses
-                allReports = allReports.filter(r => r !== null);
-                allReports.sort((a, b) => a.timestamp - b.timestamp);
-
-                console.log(`Loaded ${allReports.length} reports`);
-
-                // Initialize filtered reports to all reports
-                filteredReports = allReports;
-
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('content').style.display = 'block';
-
-                initializeDashboard();
-            } catch (error) {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('error').style.display = 'block';
-                document.getElementById('error').textContent = `Error loading reports: ${error.message}`;
-                console.error('Error loading reports:', error);
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Test Run Date'
             }
+          }
         }
+      }
+    });
+    updateRequestVolumeChart();
+  }
 
-        function initializeDashboard() {
-            if (allReports.length === 0) return;
+  function updateRequestVolumeChart() {
+    if (!charts.requestVolume) return;
 
-            // Update summary stats
-            updateSummaryStats();
+    const labels = filteredReports.map(r => r.date);
+    const requestData = filteredReports.map(r => {
+      const agg = r.data.raw_request_metrics?.find(m => m.name === 'Aggregated');
+      return agg ? agg.number_of_requests.value : null;
+    });
 
-            // Populate endpoint dropdown
-            populateEndpointDropdown();
+    charts.requestVolume.data.labels = labels;
+    charts.requestVolume.data.datasets[0].data = requestData;
+    charts.requestVolume.options.plugins.annotation.annotations = buildAnnotations(labels);
+    charts.requestVolume.update();
+  }
 
-            // Create charts
-            createResponseTimeChart();
-            createRequestVolumeChart();
-            createEndpointChart();
-            createSlowestEndpointsChart();
-            updateEndpointsList();
-
-            // Add event listeners
-            document.getElementById('dateRangeSelect').addEventListener('change', refreshDashboard);
-            document.getElementById('endpointSelect').addEventListener('change', updateEndpointChart);
-            document.getElementById('metricSelect').addEventListener('change', updateEndpointChart);
-        }
-
-        function updateSummaryStats() {
-            const latest = filteredReports[filteredReports.length - 1].data;
-            const previous = filteredReports.length > 1 ? filteredReports[filteredReports.length - 2].data : null;
-
-            // Total runs
-            document.getElementById('totalRuns').textContent = filteredReports.length;
-
-            // Latest avg response time
-            const aggregated = latest.raw_request_metrics?.find(m => m.name === 'Aggregated');
-            if (aggregated) {
-                const avgTime = aggregated.response_time_average.value.toFixed(2);
-                document.getElementById('latestAvgTime').textContent = `${avgTime}ms`;
-
-                const delta = aggregated.response_time_average.delta;
-                const trendEl = document.getElementById('avgTimeTrend');
-                if (delta !== undefined && delta !== 0) {
-                    trendEl.textContent = `${delta > 0 ? '↑' : '↓'} ${Math.abs(delta).toFixed(2)}ms`;
-                    trendEl.className = `trend ${delta > 0 ? 'up' : 'down'}`;
-                }
+  function createEndpointChart() {
+    const ctx = document.getElementById('endpointChart').getContext('2d');
+    charts.endpoint = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: []
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Value'
             }
-
-            // Total requests
-            if (aggregated) {
-                const requests = aggregated.number_of_requests.value;
-                document.getElementById('totalRequests').textContent = requests.toLocaleString();
-
-                const delta = aggregated.number_of_requests.delta;
-                const trendEl = document.getElementById('requestsTrend');
-                if (delta !== undefined && delta !== 0) {
-                    trendEl.textContent = `${delta > 0 ? '↑' : '↓'} ${Math.abs(delta)}`;
-                    // For requests: up is good (green/down), down is bad (red/up) - inverted from response times
-                    trendEl.className = `trend ${delta > 0 ? 'down' : 'up'}`;
-                }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Test Run Date'
             }
-
-            // Endpoint count
-            const endpointCount = (latest.raw_request_metrics?.length || 1) - 1; // Exclude Aggregated
-            document.getElementById('endpointCount').textContent = endpointCount;
+          }
         }
+      }
+    });
+    updateEndpointChart();
+  }
 
-        function populateEndpointDropdown() {
-            const latest = filteredReports[filteredReports.length - 1].data;
-            const endpoints = latest.raw_request_metrics
-                .filter(m => m.name !== 'Aggregated')
-                .map(m => ({ method: m.method, name: m.name }))
-                .sort((a, b) => a.name.localeCompare(b.name));
+  function updateEndpointChart() {
+    if (!charts.endpoint) {
+      console.error('Chart not initialized');
+      return;
+    }
 
-            const select = document.getElementById('endpointSelect');
-            // Clear existing options except the first one (Aggregated)
-            while (select.options.length > 1) {
-                select.remove(1);
+    const endpointName = document.getElementById('endpointSelect').value;
+    const metric = document.getElementById('metricSelect').value;
+
+    console.log('Updating chart for endpoint:', endpointName, 'metric:', metric);
+
+    const labels = filteredReports.map(r => r.date);
+    const data = filteredReports.map(r => {
+      const endpoint = r.data.raw_request_metrics?.find(m => m.name === endpointName);
+      if (!endpoint) {
+        return null;
+      }
+
+      if (metric.includes('.')) {
+        const [key, subkey] = metric.split('.');
+        return endpoint[key]?.[subkey];
+      }
+      return endpoint[metric]?.value;
+    });
+
+    const validDataPoints = data.filter(d => d !== null);
+    console.log('Data points:', validDataPoints.length, 'of', data.length);
+    console.log('Sample data:', validDataPoints.slice(0, 5));
+
+    const metricLabels = {
+      'response_time_average': 'Average Response Time (ms)',
+      'response_time_minimum': 'Minimum Response Time (ms)',
+      'response_time_maximum': 'Maximum Response Time (ms)',
+      'number_of_requests': 'Number of Requests',
+      'requests_per_second': 'Requests Per Second'
+    };
+
+    // Destroy and recreate the chart to ensure it updates properly
+    const canvas = document.getElementById('endpointChart');
+    const ctx = canvas.getContext('2d');
+
+    charts.endpoint.destroy();
+
+    charts.endpoint = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: `${endpointName} - ${metricLabels[metric] || metric}`,
+          data: data,
+          borderColor: '#764ba2',
+          backgroundColor: 'rgba(118, 75, 162, 0.1)',
+          tension: 0.4,
+          fill: true,
+          spanGaps: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          },
+          annotation: {annotations: buildAnnotations(labels)}
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: metricLabels[metric] || metric
             }
-
-            endpoints.forEach(ep => {
-                const option = document.createElement('option');
-                option.value = ep.name;
-                option.textContent = `${ep.method} ${ep.name}`;
-                select.appendChild(option);
-            });
-        }
-
-        function createResponseTimeChart() {
-            const ctx = document.getElementById('responseTimeChart').getContext('2d');
-            charts.responseTime = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Average Response Time (ms)',
-                        data: [],
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Response Time (ms)'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Test Run Date'
-                            }
-                        }
-                    }
-                }
-            });
-            updateResponseTimeChart();
-        }
-
-        function updateResponseTimeChart() {
-            if (!charts.responseTime) return;
-
-            const labels = filteredReports.map(r => r.date);
-            const aggregatedData = filteredReports.map(r => {
-                const agg = r.data.raw_request_metrics?.find(m => m.name === 'Aggregated');
-                return agg ? agg.response_time_average.value : null;
-            });
-
-            charts.responseTime.data.labels = labels;
-            charts.responseTime.data.datasets[0].data = aggregatedData;
-            charts.responseTime.update();
-        }
-
-        function createRequestVolumeChart() {
-            const ctx = document.getElementById('requestVolumeChart').getContext('2d');
-            charts.requestVolume = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Total Requests',
-                        data: [],
-                        backgroundColor: 'rgba(72, 187, 120, 0.7)',
-                        borderColor: '#48bb78',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Number of Requests'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Test Run Date'
-                            }
-                        }
-                    }
-                }
-            });
-            updateRequestVolumeChart();
-        }
-
-        function updateRequestVolumeChart() {
-            if (!charts.requestVolume) return;
-
-            const labels = filteredReports.map(r => r.date);
-            const requestData = filteredReports.map(r => {
-                const agg = r.data.raw_request_metrics?.find(m => m.name === 'Aggregated');
-                return agg ? agg.number_of_requests.value : null;
-            });
-
-            charts.requestVolume.data.labels = labels;
-            charts.requestVolume.data.datasets[0].data = requestData;
-            charts.requestVolume.update();
-        }
-
-        function createEndpointChart() {
-            const ctx = document.getElementById('endpointChart').getContext('2d');
-            charts.endpoint = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: []
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Value'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Test Run Date'
-                            }
-                        }
-                    }
-                }
-            });
-            updateEndpointChart();
-        }
-
-        function updateEndpointChart() {
-            if (!charts.endpoint) {
-                console.error('Chart not initialized');
-                return;
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Test Run Date'
             }
-
-            const endpointName = document.getElementById('endpointSelect').value;
-            const metric = document.getElementById('metricSelect').value;
-
-            console.log('Updating chart for endpoint:', endpointName, 'metric:', metric);
-
-            const labels = filteredReports.map(r => r.date);
-            const data = filteredReports.map(r => {
-                const endpoint = r.data.raw_request_metrics?.find(m => m.name === endpointName);
-                if (!endpoint) {
-                    return null;
-                }
-
-                if (metric.includes('.')) {
-                    const [key, subkey] = metric.split('.');
-                    return endpoint[key]?.[subkey];
-                }
-                return endpoint[metric]?.value;
-            });
-
-            const validDataPoints = data.filter(d => d !== null);
-            console.log('Data points:', validDataPoints.length, 'of', data.length);
-            console.log('Sample data:', validDataPoints.slice(0, 5));
-
-            const metricLabels = {
-                'response_time_average': 'Average Response Time (ms)',
-                'response_time_minimum': 'Minimum Response Time (ms)',
-                'response_time_maximum': 'Maximum Response Time (ms)',
-                'number_of_requests': 'Number of Requests',
-                'requests_per_second': 'Requests Per Second'
-            };
-
-            // Destroy and recreate the chart to ensure it updates properly
-            const canvas = document.getElementById('endpointChart');
-            const ctx = canvas.getContext('2d');
-
-            charts.endpoint.destroy();
-
-            charts.endpoint = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: `${endpointName} - ${metricLabels[metric] || metric}`,
-                        data: data,
-                        borderColor: '#764ba2',
-                        backgroundColor: 'rgba(118, 75, 162, 0.1)',
-                        tension: 0.4,
-                        fill: true,
-                        spanGaps: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: metricLabels[metric] || metric
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Test Run Date'
-                            }
-                        }
-                    }
-                }
-            });
-
-            console.log('Chart updated successfully');
+          }
         }
+      }
+    });
 
-        function createSlowestEndpointsChart() {
-            const ctx = document.getElementById('slowestEndpointsChart').getContext('2d');
-            charts.slowest = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Average Response Time (ms)',
-                        data: [],
-                        backgroundColor: 'rgba(245, 101, 101, 0.7)',
-                        borderColor: '#f56565',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Average Response Time (ms)'
-                            }
-                        }
-                    }
-                }
-            });
-            updateSlowestEndpointsChart();
+    console.log('Chart updated successfully');
+  }
+
+  function createSlowestEndpointsChart() {
+    const ctx = document.getElementById('slowestEndpointsChart').getContext('2d');
+    charts.slowest = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Average Response Time (ms)',
+          data: [],
+          backgroundColor: 'rgba(245, 101, 101, 0.7)',
+          borderColor: '#f56565',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Average Response Time (ms)'
+            }
+          }
         }
+      }
+    });
+    updateSlowestEndpointsChart();
+  }
 
-        function updateSlowestEndpointsChart() {
-            if (!charts.slowest) return;
+  function updateSlowestEndpointsChart() {
+    if (!charts.slowest) return;
 
-            const latest = filteredReports[filteredReports.length - 1].data;
+    const latest = filteredReports[filteredReports.length - 1].data;
 
-            const endpoints = latest.raw_request_metrics
-                .filter(m => m.name !== 'Aggregated' && m.response_time_average?.value !== undefined)
-                .sort((a, b) => (b.response_time_average?.value || 0) - (a.response_time_average?.value || 0))
-                .slice(0, 10);
+    const endpoints = latest.raw_request_metrics
+        .filter(m => m.name !== 'Aggregated' && m.response_time_average?.value !== undefined)
+        .sort((a, b) => (b.response_time_average?.value || 0) - (a.response_time_average?.value || 0))
+        .slice(0, 10);
 
-            const labels = endpoints.map(e => e.name.substring(0, 40) + (e.name.length > 40 ? '...' : ''));
-            const data = endpoints.map(e => e.response_time_average?.value || 0);
+    const labels = endpoints.map(e => e.name.substring(0, 40) + (e.name.length > 40 ? '...' : ''));
+    const data = endpoints.map(e => e.response_time_average?.value || 0);
 
-            charts.slowest.data.labels = labels;
-            charts.slowest.data.datasets[0].data = data;
-            charts.slowest.update();
-        }
+    charts.slowest.data.labels = labels;
+    charts.slowest.data.datasets[0].data = data;
+    charts.slowest.update();
+  }
 
-        function updateEndpointsList() {
-            const latest = filteredReports[filteredReports.length - 1].data;
-            const container = document.getElementById('endpointsList');
+  function updateEndpointsList() {
+    const latest = filteredReports[filteredReports.length - 1].data;
+    const container = document.getElementById('endpointsList');
 
-            const endpoints = latest.raw_request_metrics
-                .filter(m => m.name !== 'Aggregated')
-                .sort((a, b) => a.name.localeCompare(b.name));
+    const endpoints = latest.raw_request_metrics
+        .filter(m => m.name !== 'Aggregated')
+        .sort((a, b) => a.name.localeCompare(b.name));
 
-            container.innerHTML = endpoints.map(ep => {
-                // Safely access all values with null checks
-                const avgValue = ep.response_time_average?.value;
-                const minValue = ep.response_time_minimum?.value;
-                const maxValue = ep.response_time_maximum?.value;
-                const requestsValue = ep.number_of_requests?.value;
-                const rpsValue = ep.requests_per_second?.value;
-                const delta = ep.response_time_average?.delta;
+    container.innerHTML = endpoints.map(ep => {
+      // Safely access all values with null checks
+      const avgValue = ep.response_time_average?.value;
+      const minValue = ep.response_time_minimum?.value;
+      const maxValue = ep.response_time_maximum?.value;
+      const requestsValue = ep.number_of_requests?.value;
+      const rpsValue = ep.requests_per_second?.value;
+      const delta = ep.response_time_average?.delta;
 
-                const trendIcon = delta > 0 ? '↑' : delta < 0 ? '↓' : '→';
-                const trendColor = delta > 0 ? '#f56565' : delta < 0 ? '#48bb78' : '#666';
+      const trendIcon = delta > 0 ? '↑' : delta < 0 ? '↓' : '→';
+      const trendColor = delta > 0 ? '#f56565' : delta < 0 ? '#48bb78' : '#666';
 
-                return `
+      return `
                     <div class="endpoint-card">
                         <div class="endpoint-name">${ep.method || ''} ${ep.name}</div>
                         <div class="endpoint-stats">
@@ -845,11 +997,11 @@
                         </div>
                     </div>
                 `;
-            }).join('');
-        }
+    }).join('');
+  }
 
-        // Load reports on page load
-        loadReports();
-    </script>
+  // Load reports on page load
+  loadReports();
+</script>
 </body>
 </html>
