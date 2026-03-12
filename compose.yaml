@@ -278,7 +278,7 @@ services:
         /usr/local/bin/loadtest \
           --host http://trustify:8080 \
           -u 7 \
-          --run-time 5m \
+          --run-time 30m \
           --report-file /report/report.html \
           --report-file /report/report.json \
           --report-file /report/report.md \
