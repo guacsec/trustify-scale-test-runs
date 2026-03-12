@@ -1,9 +1,13 @@
 {
   "get_sbom": "sha256:a3442b3778ad12842a0be900f8fefff2a3340996a49835313040057f79c70669",
-  "get_sbom_advisories": "sha256:a3442b3778ad12842a0be900f8fefff2a3340996a49835313040057f79c70669",
+  // bad performance
+  "get_sbom_advisories": null,
+  // "get_sbom_advisories": "sha256:a3442b3778ad12842a0be900f8fefff2a3340996a49835313040057f79c70669",
   "get_sbom_packages": "urn:uuid:019c4a3e-715c-7110-a8ba-3cc0260ef778",
   "get_sbom_related": "urn:uuid:019c4a3e-715c-7110-a8ba-3cc0260ef778",
-  "get_vulnerability": "CVE-2023-39325",
+  // bad performance
+  "get_vulnerability": null,
+  // "get_vulnerability": "CVE-2023-39325",
   "sbom_by_package": "pkg:oci/web-terminal-operator-bundle@sha256:f09114a0c6f50de4f1faf7cd42d1425b444875f15e68ca5d9951f71bd7e8401c?repository_url=registry.redhat.io/web-terminal/web-terminal-operator-bundle&tag=1.11",
   "sbom_license_ids": "urn:uuid:019c4a3e-715c-7110-a8ba-3cc0260ef778",
   "analyze_purl": "pkg:rpm/redhat/squid",
