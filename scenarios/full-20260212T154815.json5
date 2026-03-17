@@ -2,9 +2,10 @@
   "get_sbom": "sha256:a3442b3778ad12842a0be900f8fefff2a3340996a49835313040057f79c70669",
   // bad performance
   "get_sbom_advisories": null,
-  // "get_sbom_advisories": "sha256:a3442b3778ad12842a0be900f8fefff2a3340996a49835313040057f79c70669",
-  "get_sbom_packages": "urn:uuid:019c4a3e-715c-7110-a8ba-3cc0260ef778",
-  "get_sbom_related": "urn:uuid:019c4a3e-715c-7110-a8ba-3cc0260ef778",
+  // bad performance
+  "get_sbom_packages": null,
+  // bad performance
+  "get_sbom_related": null,
   // bad performance
   "get_vulnerability": null,
   // "get_vulnerability": "CVE-2023-39325",
