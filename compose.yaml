@@ -104,11 +104,11 @@ services:
           echo "Using cached dump.tar"
         fi
 
-        if [ ! -s /cache/dump.sql.gz ]; then
-          echo "Downloading dump.sql.gz..."
-          curl --retry 50 --retry-max-time 3600 -sSL "https://trustify-dumps.s3.eu-west-1.amazonaws.com/$${DUMP_TIMESTAMP}Z/dump.sql.gz" -o /cache/dump.sql.gz
+        if [ ! -s /cache/dump.sql.xz ]; then
+          echo "Downloading dump.sql.xz..."
+          curl --retry 50 --retry-max-time 3600 -sSL "https://trustify-dumps.s3.eu-west-1.amazonaws.com/$${DUMP_TIMESTAMP}Z/dump.sql.xz" -o /cache/dump.sql.xz
         else
-          echo "Using cached dump.sql.gz"
+          echo "Using cached dump.sql.xz"
         fi
 
   init-storage:
@@ -155,7 +155,7 @@ services:
           echo "Database already populated, skipping import"
         else
           echo "Importing dump"
-          zcat /cache/dump.sql.gz | psql -v ON_ERROR_STOP=1
+          xzcat /cache/dump.sql.xz | psql -v ON_ERROR_STOP=1
           echo "VACUUM ANALYZE; REINDEX database trustify;" | psql
         fi
 
