@@ -8,7 +8,7 @@
 # loadtests.
 #
 
-x-dump-timestamp: &dump-timestamp "20260212T154815"
+x-dump-timestamp: &dump-timestamp "20260317T023702"
 
 services:
   postgres:
