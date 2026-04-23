@@ -7,6 +7,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/date-fns@4.1.0/index.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -115,6 +117,9 @@
       display: flex;
       align-items: center;
       gap: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .date-range-selector label {
@@ -139,50 +144,6 @@
     }
 
     .date-range-selector select:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-
-    .controls {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 30px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .control-group {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .control-group label {
-      font-size: 12px;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .control-group select {
-      padding: 10px 15px;
-      border: 2px solid #e2e8f0;
-      border-radius: 5px;
-      font-size: 14px;
-      background: white;
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-
-    .control-group select:hover {
-      border-color: #667eea;
-    }
-
-    .control-group select:focus {
       outline: none;
       border-color: #667eea;
     }
@@ -215,6 +176,18 @@
       padding: 15px;
       border-radius: 8px;
       border-left: 4px solid #667eea;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .endpoint-card:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .endpoint-card.has-errors {
+      border-left-color: #f56565;
+      background: #fff5f5;
     }
 
     .endpoint-card .endpoint-name {
@@ -251,26 +224,39 @@
       margin: 0;
     }
 
-    .markers-toggle {
+    .marker-group {
+      margin-bottom: 12px;
+    }
+
+    .marker-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .marker-group-toggle {
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 13px;
-      color: #555;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
       cursor: pointer;
       user-select: none;
+      margin-bottom: 6px;
     }
 
-    .markers-toggle input[type="checkbox"] {
+    .marker-group-toggle input[type="checkbox"] {
       cursor: pointer;
       width: 15px;
       height: 15px;
     }
 
-    .markers-legend-items {
+    .marker-group-items {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 8px 12px;
+      padding-left: 21px;
+      max-height: 150px;
+      overflow-y: auto;
     }
 
     .marker-legend-item {
@@ -279,6 +265,22 @@
       gap: 6px;
       font-size: 13px;
       color: #444;
+      cursor: pointer;
+      user-select: none;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .marker-legend-item.in-range {
+      background: #ebf4ff;
+      outline: 1px solid #bdd5f5;
+    }
+
+    .marker-legend-item input[type="checkbox"] {
+      cursor: pointer;
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
     }
 
     .marker-legend-color {
@@ -303,17 +305,18 @@
     <option value="1month">Last Month</option>
     <option value="1week">Last Week</option>
   </select>
+  <label for="endpointSelect">Endpoint:</label>
+  <select id="endpointSelect">
+    <option value="Aggregated">All Endpoints (Aggregated)</option>
+  </select>
+  <button id="resetZoom" onclick="resetAllZoom()" style="display:none; padding: 8px 15px; border: 2px solid #e2e8f0; border-radius: 5px; font-size: 14px; background: white; cursor: pointer;">Reset Zoom</button>
 </div>
 
 <div id="markersLegend" class="markers-legend" style="display: none;">
   <div class="markers-legend-header">
     <h3>Event Markers</h3>
-    <label class="markers-toggle">
-      <input type="checkbox" id="markersToggle" checked>
-      Show markers
-    </label>
   </div>
-  <div id="markersLegendItems" class="markers-legend-items"></div>
+  <div id="markersLegendGroups"></div>
 </div>
 
 <div id="loading" class="loading">Loading test data...</div>
@@ -356,32 +359,14 @@
   </div>
 
   <div class="chart-container">
-    <h2>Selected Endpoint Performance</h2>
-    <div class="controls">
-      <div class="control-group">
-        <label for="endpointSelect">Select Endpoint</label>
-        <select id="endpointSelect">
-          <option value="Aggregated">All Endpoints (Aggregated)</option>
-        </select>
-      </div>
-      <div class="control-group">
-        <label for="metricSelect">Select Metric</label>
-        <select id="metricSelect">
-          <option value="response_time_average">Average Response Time</option>
-          <option value="response_time_minimum">Minimum Response Time</option>
-          <option value="response_time_maximum">Maximum Response Time</option>
-          <option value="number_of_requests">Number of Requests</option>
-          <option value="requests_per_second">Requests Per Second</option>
-        </select>
-      </div>
-    </div>
+    <h2>Errors Over Time</h2>
     <div class="chart-wrapper">
-      <canvas id="endpointChart"></canvas>
+      <canvas id="errorsChart"></canvas>
     </div>
   </div>
 
   <div class="chart-container">
-    <h2>Top 10 Slowest Endpoints (Latest Run)</h2>
+    <h2 id="slowestTitle">Top 10 Slowest Endpoints (Latest Run)</h2>
     <div class="chart-wrapper">
       <canvas id="slowestEndpointsChart"></canvas>
     </div>
@@ -397,67 +382,178 @@
   let allReports = [];
   let filteredReports = [];
   let charts = {};
-  let allMarkers = [];
-  let markersVisible = true;
+  let markerGroups = {};
+  let markerGroupDefs = {};
+  let markerVisibility = {};
+  let currentZoom = {};
+  let syncing = false;
+
+  function updateMarkerHighlights() {
+    const container = document.getElementById('markersLegendGroups');
+    if (currentZoom.min === undefined) {
+      container.querySelectorAll('.marker-legend-item.in-range').forEach(el => el.classList.remove('in-range'));
+      return;
+    }
+    const labels = filteredReports.map(r => r.date);
+    const minDate = new Date(labels[Math.ceil(currentZoom.min)].replace(' ', 'T'));
+    const maxDate = new Date(labels[Math.floor(currentZoom.max)].replace(' ', 'T'));
+    container.querySelectorAll('.marker-legend-item').forEach(item => {
+      const date = new Date(item.dataset.date);
+      item.classList.toggle('in-range', date >= minDate && date <= maxDate);
+    });
+  }
+
+  function syncZoom(sourceChart) {
+    if (syncing) return;
+    syncing = true;
+    const {min, max} = sourceChart.scales.x;
+    currentZoom = {min, max};
+    document.getElementById('resetZoom').style.display = '';
+    [charts.responseTime, charts.requestVolume, charts.errors]
+      .filter(c => c && c !== sourceChart)
+      .forEach(c => c.zoomScale('x', {min, max}, 'none'));
+    syncing = false;
+    updateMarkerHighlights();
+    updateSlowestEndpointsChart();
+  }
+
+  function resetAllZoom() {
+    syncing = true;
+    currentZoom = {};
+    document.getElementById('resetZoom').style.display = 'none';
+    [charts.responseTime, charts.requestVolume, charts.errors]
+      .filter(c => c)
+      .forEach(c => c.resetZoom('none'));
+    syncing = false;
+    updateMarkerHighlights();
+    updateSlowestEndpointsChart();
+  }
+
+  const zoomOptions = {
+    zoom: {
+      drag: {enabled: true, backgroundColor: 'rgba(102, 126, 234, 0.15)', borderColor: '#667eea', borderWidth: 1},
+      pinch: {enabled: true},
+      mode: 'x',
+      onZoomComplete: ({chart}) => syncZoom(chart),
+    }
+  };
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
 
   const DEFAULT_MARKER_COLORS = [
     '#e53e3e', '#dd6b20', '#d69e2e', '#38a169',
     '#3182ce', '#805ad5', '#d53f8c', '#00b5d8'
   ];
 
-  function getMarkerColor(marker, index) {
-    return marker.color || DEFAULT_MARKER_COLORS[index % DEFAULT_MARKER_COLORS.length];
+  function getMarkerColor(marker, indexInGroup, groupKey) {
+    if (marker.color) return marker.color;
+    const groupColor = markerGroupDefs[groupKey]?.color;
+    if (groupColor) return groupColor;
+    return DEFAULT_MARKER_COLORS[indexInGroup % DEFAULT_MARKER_COLORS.length];
   }
 
   function buildAnnotations(labels) {
     const annotations = {};
-    if (!markersVisible) return annotations;
-    allMarkers.forEach((marker, i) => {
-      const markerDate = new Date(marker.date);
-      const idx = labels.findIndex(label => {
-        const d = new Date(label.replace(' ', 'T'));
-        return d >= markerDate;
+    for (const [groupKey, markers] of Object.entries(markerGroups)) {
+      markers.forEach((marker, i) => {
+        if (!markerVisibility[`${groupKey}_${i}`]) return;
+        const markerDate = new Date(marker.date);
+        const idx = labels.findIndex(label => {
+          const d = new Date(label.replace(' ', 'T'));
+          return d >= markerDate;
+        });
+        if (idx === -1) return;
+        const color = getMarkerColor(marker, i, groupKey);
+        annotations[`marker_${groupKey}_${i}`] = {
+          type: 'line',
+          xMin: idx,
+          xMax: idx,
+          borderColor: color,
+          borderWidth: 2,
+          borderDash: [6, 3],
+          label: {
+            display: true,
+            content: marker.label,
+            position: 'start',
+            backgroundColor: color,
+            color: '#fff',
+            font: {size: 11},
+            padding: {x: 4, y: 2},
+            rotation: -90,
+            yAdjust: -4,
+          }
+        };
       });
-      if (idx === -1) return;
-      const color = getMarkerColor(marker, i);
-      annotations[`marker_${i}`] = {
-        type: 'line',
-        xMin: idx,
-        xMax: idx,
-        borderColor: color,
-        borderWidth: 2,
-        borderDash: [6, 3],
-        label: {
-          display: true,
-          content: marker.label,
-          position: 'start',
-          backgroundColor: color,
-          color: '#fff',
-          font: {size: 11},
-          padding: {x: 4, y: 2},
-          rotation: -90,
-          yAdjust: -4,
-        }
-      };
-    });
+    }
     return annotations;
+  }
+
+  function updateGroupCheckbox(container, groupKey) {
+    const markers = markerGroups[groupKey];
+    const allChecked = markers.every((_, i) => markerVisibility[`${groupKey}_${i}`]);
+    const noneChecked = markers.every((_, i) => !markerVisibility[`${groupKey}_${i}`]);
+    const cb = container.querySelector(`input[data-group-toggle="${groupKey}"]`);
+    if (cb) {
+      cb.checked = allChecked;
+      cb.indeterminate = !allChecked && !noneChecked;
+    }
   }
 
   function updateMarkersLegend() {
     const legend = document.getElementById('markersLegend');
-    const items = document.getElementById('markersLegendItems');
-    if (allMarkers.length === 0) {
+    const container = document.getElementById('markersLegendGroups');
+    const totalMarkers = Object.values(markerGroups).reduce((sum, m) => sum + m.length, 0);
+    if (totalMarkers === 0) {
       legend.style.display = 'none';
       return;
     }
     legend.style.display = 'block';
-    items.innerHTML = allMarkers.map((marker, i) => {
-      const color = getMarkerColor(marker, i);
-      return `<div class="marker-legend-item">
+    container.innerHTML = Object.entries(markerGroups).map(([groupKey, markers]) => {
+      const groupDef = markerGroupDefs[groupKey] || {};
+      const label = groupDef.label || groupKey;
+      const allChecked = markers.every((_, i) => markerVisibility[`${groupKey}_${i}`]);
+      const groupChecked = allChecked ? 'checked' : '';
+      const itemsHtml = markers.map((marker, i) => {
+        const key = `${groupKey}_${i}`;
+        const color = getMarkerColor(marker, i, groupKey);
+        const checked = markerVisibility[key] ? 'checked' : '';
+        const tooltip = marker.title ? ` title="${escapeHtml(marker.title)}"` : '';
+        return `<label class="marker-legend-item" data-date="${marker.date}"${tooltip}>
+                    <input type="checkbox" data-marker="${key}" data-group="${groupKey}" ${checked}>
                     <div class="marker-legend-color" style="background:${color};"></div>
-                    <span><strong>${marker.label}</strong> &mdash; ${marker.date}</span>
-                </div>`;
+                    <span><strong>${escapeHtml(marker.label)}</strong> &mdash; ${marker.date}</span>
+                </label>`;
+      }).join('');
+      return `<div class="marker-group">
+        <label class="marker-group-toggle">
+          <input type="checkbox" data-group-toggle="${groupKey}" ${groupChecked}>
+          ${label} (${markers.length})
+        </label>
+        <div class="marker-group-items">
+          ${itemsHtml}
+        </div>
+      </div>`;
     }).join('');
+    Object.keys(markerGroups).forEach(gk => updateGroupCheckbox(container, gk));
+    container.querySelectorAll('input[data-group-toggle]').forEach(cb => {
+      cb.addEventListener('change', function() {
+        const gk = this.dataset.groupToggle;
+        const checked = this.checked;
+        this.indeterminate = false;
+        markerGroups[gk].forEach((_, i) => { markerVisibility[`${gk}_${i}`] = checked; });
+        container.querySelectorAll(`input[data-group="${gk}"]`).forEach(mcb => { mcb.checked = checked; });
+        refreshDashboard();
+      });
+    });
+    container.querySelectorAll('input[data-marker]').forEach(cb => {
+      cb.addEventListener('change', function() {
+        markerVisibility[this.dataset.marker] = this.checked;
+        updateGroupCheckbox(container, this.dataset.group);
+        refreshDashboard();
+      });
+    });
   }
 
   // Get filtered reports based on selected date range
@@ -500,7 +596,7 @@
     populateEndpointDropdown();
     updateResponseTimeChart();
     updateRequestVolumeChart();
-    updateEndpointChart();
+    updateErrorsChart();
     updateSlowestEndpointsChart();
     updateEndpointsList();
   }
@@ -512,7 +608,18 @@
       try {
         const markersResponse = await fetch('markers.json');
         if (markersResponse.ok) {
-          allMarkers = await markersResponse.json();
+          const markersData = await markersResponse.json();
+          if (Array.isArray(markersData)) {
+            markerGroups = { 'events': markersData };
+            markerGroupDefs = { 'events': { label: 'Events', visible: true } };
+          } else {
+            markerGroupDefs = markersData.groups || {};
+            markerGroups = markersData.markers || {};
+          }
+          for (const [groupKey, markers] of Object.entries(markerGroups)) {
+            const visible = markerGroupDefs[groupKey]?.visible !== false;
+            markers.forEach((_, i) => { markerVisibility[`${groupKey}_${i}`] = visible; });
+          }
         }
       } catch (_) {
       }
@@ -580,18 +687,13 @@
     // Create charts
     createResponseTimeChart();
     createRequestVolumeChart();
-    createEndpointChart();
+    createErrorsChart();
     createSlowestEndpointsChart();
     updateEndpointsList();
 
     // Add event listeners
-    document.getElementById('dateRangeSelect').addEventListener('change', refreshDashboard);
-    document.getElementById('endpointSelect').addEventListener('change', updateEndpointChart);
-    document.getElementById('metricSelect').addEventListener('change', updateEndpointChart);
-    document.getElementById('markersToggle').addEventListener('change', function () {
-      markersVisible = this.checked;
-      refreshDashboard();
-    });
+    document.getElementById('dateRangeSelect').addEventListener('change', () => { resetAllZoom(); refreshDashboard(); });
+    document.getElementById('endpointSelect').addEventListener('change', refreshDashboard);
   }
 
   function updateSummaryStats() {
@@ -642,7 +744,7 @@
         .sort((a, b) => a.name.localeCompare(b.name));
 
     const select = document.getElementById('endpointSelect');
-    // Clear existing options except the first one (Aggregated)
+    const previousValue = select.value;
     while (select.options.length > 1) {
       select.remove(1);
     }
@@ -653,6 +755,9 @@
       option.textContent = `${ep.method} ${ep.name}`;
       select.appendChild(option);
     });
+    if ([...select.options].some(o => o.value === previousValue)) {
+      select.value = previousValue;
+    }
   }
 
   function createResponseTimeChart() {
@@ -682,7 +787,8 @@
             mode: 'index',
             intersect: false
           },
-          annotation: {annotations: {}}
+          annotation: {annotations: {}},
+          zoom: zoomOptions
         },
         scales: {
           y: {
@@ -707,14 +813,15 @@
   function updateResponseTimeChart() {
     if (!charts.responseTime) return;
 
+    const endpointName = document.getElementById('endpointSelect').value;
     const labels = filteredReports.map(r => r.date);
-    const aggregatedData = filteredReports.map(r => {
-      const agg = r.data.raw_request_metrics?.find(m => m.name === 'Aggregated');
-      return agg ? agg.response_time_average.value : null;
+    const data = filteredReports.map(r => {
+      const ep = r.data.raw_request_metrics?.find(m => m.name === endpointName);
+      return ep ? ep.response_time_average.value : null;
     });
 
     charts.responseTime.data.labels = labels;
-    charts.responseTime.data.datasets[0].data = aggregatedData;
+    charts.responseTime.data.datasets[0].data = data;
     charts.responseTime.options.plugins.annotation.annotations = buildAnnotations(labels);
     charts.responseTime.update();
   }
@@ -741,7 +848,8 @@
             display: true,
             position: 'top'
           },
-          annotation: {annotations: {}}
+          annotation: {annotations: {}},
+          zoom: zoomOptions
         },
         scales: {
           y: {
@@ -766,10 +874,11 @@
   function updateRequestVolumeChart() {
     if (!charts.requestVolume) return;
 
+    const endpointName = document.getElementById('endpointSelect').value;
     const labels = filteredReports.map(r => r.date);
     const requestData = filteredReports.map(r => {
-      const agg = r.data.raw_request_metrics?.find(m => m.name === 'Aggregated');
-      return agg ? agg.number_of_requests.value : null;
+      const ep = r.data.raw_request_metrics?.find(m => m.name === endpointName);
+      return ep ? ep.number_of_requests.value : null;
     });
 
     charts.requestVolume.data.labels = labels;
@@ -778,98 +887,18 @@
     charts.requestVolume.update();
   }
 
-  function createEndpointChart() {
-    const ctx = document.getElementById('endpointChart').getContext('2d');
-    charts.endpoint = new Chart(ctx, {
-      type: 'line',
+  function createErrorsChart() {
+    const ctx = document.getElementById('errorsChart').getContext('2d');
+    charts.errors = new Chart(ctx, {
+      type: 'bar',
       data: {
         labels: [],
-        datasets: []
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top'
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Value'
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Test Run Date'
-            }
-          }
-        }
-      }
-    });
-    updateEndpointChart();
-  }
-
-  function updateEndpointChart() {
-    if (!charts.endpoint) {
-      console.error('Chart not initialized');
-      return;
-    }
-
-    const endpointName = document.getElementById('endpointSelect').value;
-    const metric = document.getElementById('metricSelect').value;
-
-    console.log('Updating chart for endpoint:', endpointName, 'metric:', metric);
-
-    const labels = filteredReports.map(r => r.date);
-    const data = filteredReports.map(r => {
-      const endpoint = r.data.raw_request_metrics?.find(m => m.name === endpointName);
-      if (!endpoint) {
-        return null;
-      }
-
-      if (metric.includes('.')) {
-        const [key, subkey] = metric.split('.');
-        return endpoint[key]?.[subkey];
-      }
-      return endpoint[metric]?.value;
-    });
-
-    const validDataPoints = data.filter(d => d !== null);
-    console.log('Data points:', validDataPoints.length, 'of', data.length);
-    console.log('Sample data:', validDataPoints.slice(0, 5));
-
-    const metricLabels = {
-      'response_time_average': 'Average Response Time (ms)',
-      'response_time_minimum': 'Minimum Response Time (ms)',
-      'response_time_maximum': 'Maximum Response Time (ms)',
-      'number_of_requests': 'Number of Requests',
-      'requests_per_second': 'Requests Per Second'
-    };
-
-    // Destroy and recreate the chart to ensure it updates properly
-    const canvas = document.getElementById('endpointChart');
-    const ctx = canvas.getContext('2d');
-
-    charts.endpoint.destroy();
-
-    charts.endpoint = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
         datasets: [{
-          label: `${endpointName} - ${metricLabels[metric] || metric}`,
-          data: data,
-          borderColor: '#764ba2',
-          backgroundColor: 'rgba(118, 75, 162, 0.1)',
-          tension: 0.4,
-          fill: true,
-          spanGaps: true
+          label: 'Total Errors',
+          data: [],
+          backgroundColor: 'rgba(245, 101, 101, 0.7)',
+          borderColor: '#f56565',
+          borderWidth: 2
         }]
       },
       options: {
@@ -880,14 +909,15 @@
             display: true,
             position: 'top'
           },
-          annotation: {annotations: buildAnnotations(labels)}
+          annotation: {annotations: {}},
+          zoom: zoomOptions
         },
         scales: {
           y: {
             beginAtZero: true,
             title: {
               display: true,
-              text: metricLabels[metric] || metric
+              text: 'Number of Errors'
             }
           },
           x: {
@@ -899,8 +929,27 @@
         }
       }
     });
+    updateErrorsChart();
+  }
 
-    console.log('Chart updated successfully');
+  function updateErrorsChart() {
+    if (!charts.errors) return;
+
+    const endpointName = document.getElementById('endpointSelect').value;
+    const labels = filteredReports.map(r => r.date);
+    const errorData = filteredReports.map(r => {
+      const errors = r.data.errors;
+      if (!errors || errors.length === 0) return 0;
+      if (endpointName === 'Aggregated') {
+        return errors.reduce((sum, e) => sum + (e.occurrences?.value || 0), 0);
+      }
+      return errors.filter(e => e.name === endpointName).reduce((sum, e) => sum + (e.occurrences?.value || 0), 0);
+    });
+
+    charts.errors.data.labels = labels;
+    charts.errors.data.datasets[0].data = errorData;
+    charts.errors.options.plugins.annotation.annotations = buildAnnotations(labels);
+    charts.errors.update();
   }
 
   function createSlowestEndpointsChart() {
@@ -940,12 +989,25 @@
     updateSlowestEndpointsChart();
   }
 
+  function getZoomedReports() {
+    if (currentZoom.min === undefined) return filteredReports;
+    const labels = filteredReports.map(r => r.date);
+    const minIdx = Math.ceil(currentZoom.min);
+    const maxIdx = Math.floor(currentZoom.max);
+    return filteredReports.slice(minIdx, maxIdx + 1);
+  }
+
   function updateSlowestEndpointsChart() {
     if (!charts.slowest) return;
 
-    const latest = filteredReports[filteredReports.length - 1].data;
+    const visible = getZoomedReports();
+    if (visible.length === 0) return;
+    const latest = visible[visible.length - 1];
 
-    const endpoints = latest.raw_request_metrics
+    const titleEl = document.getElementById('slowestTitle');
+    titleEl.textContent = `Top 10 Slowest Endpoints (${latest.date})`;
+
+    const endpoints = latest.data.raw_request_metrics
         .filter(m => m.name !== 'Aggregated' && m.response_time_average?.value !== undefined)
         .sort((a, b) => (b.response_time_average?.value || 0) - (a.response_time_average?.value || 0))
         .slice(0, 10);
@@ -967,19 +1029,20 @@
         .sort((a, b) => a.name.localeCompare(b.name));
 
     container.innerHTML = endpoints.map(ep => {
-      // Safely access all values with null checks
       const avgValue = ep.response_time_average?.value;
       const minValue = ep.response_time_minimum?.value;
       const maxValue = ep.response_time_maximum?.value;
       const requestsValue = ep.number_of_requests?.value;
       const rpsValue = ep.requests_per_second?.value;
+      const fpsValue = ep.failures_per_second?.value || 0;
       const delta = ep.response_time_average?.delta;
 
       const trendIcon = delta > 0 ? '↑' : delta < 0 ? '↓' : '→';
       const trendColor = delta > 0 ? '#f56565' : delta < 0 ? '#48bb78' : '#666';
+      const errorClass = fpsValue > 0 ? ' has-errors' : '';
 
       return `
-                    <div class="endpoint-card">
+                    <div class="endpoint-card${errorClass}" data-endpoint="${escapeHtml(ep.name)}">
                         <div class="endpoint-name">${ep.method || ''} ${ep.name}</div>
                         <div class="endpoint-stats">
                             <span>Avg: ${avgValue !== undefined ? avgValue.toFixed(2) + 'ms' : 'N/A'}</span>
@@ -995,9 +1058,20 @@
                             <span>Requests: ${requestsValue !== undefined ? requestsValue : 'N/A'}</span>
                             <span>RPS: ${rpsValue !== undefined ? rpsValue.toFixed(2) : 'N/A'}</span>
                         </div>
+                        <div class="endpoint-stats">
+                            <span>Errors/s: ${fpsValue.toFixed(2)}</span>
+                        </div>
                     </div>
                 `;
     }).join('');
+    container.querySelectorAll('.endpoint-card[data-endpoint]').forEach(card => {
+      card.addEventListener('click', function() {
+        const select = document.getElementById('endpointSelect');
+        select.value = this.dataset.endpoint;
+        refreshDashboard();
+        window.scrollTo({top: 0, behavior: 'smooth'});
+      });
+    });
   }
 
   // Load reports on page load
