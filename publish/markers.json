@@ -5035,9 +5035,9 @@
         "title": "feat: add endpoint for returning all AIBOM's, optionally filtered"
       },
       {
-        "date": "2026-04-20",
-        "label": "#2336",
-        "title": "Prepare release 0.5.0-beta.2"
+        "date": "2026-04-23",
+        "label": "#2243",
+        "title": "test: create a test for m0002010 using DS4"
       }
     ]
   }
