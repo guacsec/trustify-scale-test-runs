@@ -5033,6 +5033,11 @@
         "date": "2026-04-29",
         "label": "#2342",
         "title": "Backport PR #2337"
+      },
+      {
+        "date": "2026-05-04",
+        "label": "#2345",
+        "title": "test: check for btrfs mount option too"
       }
     ]
   }
