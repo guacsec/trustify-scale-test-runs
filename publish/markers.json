@@ -5035,9 +5035,9 @@
         "title": "Backport PR #2337"
       },
       {
-        "date": "2026-05-04",
-        "label": "#2345",
-        "title": "test: check for btrfs mount option too"
+        "date": "2026-05-06",
+        "label": "#2338",
+        "title": "Improve API for better pagination"
       }
     ]
   }
