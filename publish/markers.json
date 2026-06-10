@@ -81,11 +81,6 @@
       },
       {
         "date": "2024-08-07",
-        "label": "#651",
-        "title": "chore - add indexes to assist sorting at scale "
-      },
-      {
-        "date": "2024-08-07",
         "label": "#653",
         "title": "feat: allow using a dedicated working dir for dumps"
       },
@@ -103,11 +98,6 @@
         "date": "2024-08-08",
         "label": "#643",
         "title": "feat: improve product details to return basic sbom data"
-      },
-      {
-        "date": "2024-08-08",
-        "label": "#657",
-        "title": "chore - add indexes to assist api/v1/purl searching."
       },
       {
         "date": "2024-08-08",
@@ -158,11 +148,6 @@
         "date": "2024-08-12",
         "label": "#670",
         "title": "Add Severity enum to openapi model."
-      },
-      {
-        "date": "2024-08-12",
-        "label": "#674",
-        "title": "chore - add index to assist csaf-vex ingestion and api/v1/vulnerability"
       },
       {
         "date": "2024-08-12",
@@ -248,11 +233,6 @@
         "date": "2024-08-20",
         "label": "#697",
         "title": "Alter `cwe` column into plural for `vulnerability` and `advisory_vuln…"
-      },
-      {
-        "date": "2024-08-20",
-        "label": "#698",
-        "title": "chore - add a few more purl tests"
       },
       {
         "date": "2024-08-20",
@@ -496,33 +476,8 @@
       },
       {
         "date": "2024-09-10",
-        "label": "#722",
-        "title": " implement /api/v1/analysis/root-component"
-      },
-      {
-        "date": "2024-09-10",
         "label": "#776",
         "title": "chore: removes unused deps"
-      },
-      {
-        "date": "2024-09-10",
-        "label": "#781",
-        "title": "fix parallel safe by removing raise notice"
-      },
-      {
-        "date": "2024-09-11",
-        "label": "#780",
-        "title": "Added test confirming purl comparison works #777"
-      },
-      {
-        "date": "2024-09-11",
-        "label": "#782",
-        "title": "invoke graph analysis ingestion only when we ingest sbom"
-      },
-      {
-        "date": "2024-09-11",
-        "label": "#786",
-        "title": "Fix graph hashmap key mangling on analysis service invoke"
       },
       {
         "date": "2024-09-12",
@@ -548,11 +503,6 @@
         "date": "2024-09-12",
         "label": "#791",
         "title": "chore:  checks existence of --test-threads=1"
-      },
-      {
-        "date": "2024-09-12",
-        "label": "#797",
-        "title": "silence the analysis graph noise"
       },
       {
         "date": "2024-09-13",
@@ -626,28 +576,8 @@
       },
       {
         "date": "2024-09-19",
-        "label": "#826",
-        "title": "Mitigate deadlocks when creating purls"
-      },
-      {
-        "date": "2024-09-19",
         "label": "#827",
         "title": "prepare next release"
-      },
-      {
-        "date": "2024-09-20",
-        "label": "#831",
-        "title": "mark version_matches pg funcs as unsafe."
-      },
-      {
-        "date": "2024-09-20",
-        "label": "#833",
-        "title": "chore: prepare release 0.1.0-alpha.18"
-      },
-      {
-        "date": "2024-09-20",
-        "label": "#834",
-        "title": "chore: update release doc"
       },
       {
         "date": "2024-09-20",
@@ -695,11 +625,6 @@
         "title": "Refine ai tools"
       },
       {
-        "date": "2024-09-28",
-        "label": "#852",
-        "title": "Add jsonb purl column to qualified_purl."
-      },
-      {
         "date": "2024-09-30",
         "label": "#684",
         "title": "feat: ingest products from csaf documents"
@@ -738,11 +663,6 @@
         "date": "2024-10-02",
         "label": "#845",
         "title": "Provide a meaningful way for updating/deleting CSAF advisories"
-      },
-      {
-        "date": "2024-10-02",
-        "label": "#880",
-        "title": "Add id indexes to speed up purl resolution."
       },
       {
         "date": "2024-10-03",
@@ -850,11 +770,6 @@
         "title": "test: add test for updating CWEs"
       },
       {
-        "date": "2024-10-14",
-        "label": "#920",
-        "title": "Enhance query filters to handle Uuid and enable analysis graph to use filters."
-      },
-      {
         "date": "2024-10-15",
         "label": "#907",
         "title": "Refactor and enhance version comparison"
@@ -888,11 +803,6 @@
         "date": "2024-10-24",
         "label": "#941",
         "title": "refactor: break up Query behavior for better clarity"
-      },
-      {
-        "date": "2024-10-24",
-        "label": "#942",
-        "title": "chore: Enhance testing around cyclonedx ingestion"
       },
       {
         "date": "2024-10-29",
@@ -1041,11 +951,6 @@
       },
       {
         "date": "2024-11-15",
-        "label": "#996",
-        "title": "Add version and handle circular deps in analysis graphs"
-      },
-      {
-        "date": "2024-11-15",
         "label": "#1007",
         "title": "test: adds a test for multiple csaf file upload"
       },
@@ -1058,11 +963,6 @@
         "date": "2024-11-18",
         "label": "#1008",
         "title": "test: add test for AI 'package-info' tool"
-      },
-      {
-        "date": "2024-11-18",
-        "label": "#1012",
-        "title": "Fix circular deps in analysis graph and add purl migration for get_purl psql func"
       },
       {
         "date": "2024-11-18",
@@ -1088,11 +988,6 @@
         "date": "2024-11-21",
         "label": "#1021",
         "title": "fix: move number_of_packages to SbomHead"
-      },
-      {
-        "date": "2024-11-21",
-        "label": "#1027",
-        "title": "Set implied relationships for SBOM components in analysis graph"
       },
       {
         "date": "2024-11-21",
@@ -1128,11 +1023,6 @@
         "date": "2024-11-22",
         "label": "#1040",
         "title": "chore: prepare release 0.1.0-alpha.25"
-      },
-      {
-        "date": "2024-11-25",
-        "label": "#1041",
-        "title": "Add retrieve_all_sbom_roots_by_name() func"
       },
       {
         "date": "2024-11-26",
@@ -1396,11 +1286,6 @@
       },
       {
         "date": "2025-01-15",
-        "label": "#1139",
-        "title": "chore: perf improvements"
-      },
-      {
-        "date": "2025-01-15",
         "label": "#1141",
         "title": "feat: show relationships in response from /api/v1/purl/{key}"
       },
@@ -1448,11 +1333,6 @@
         "date": "2025-01-17",
         "label": "#1154",
         "title": "fix: improve product version range migration"
-      },
-      {
-        "date": "2025-01-17",
-        "label": "#1156",
-        "title": "Allow more relationships in analysis graph"
       },
       {
         "date": "2025-01-20",
@@ -1550,11 +1430,6 @@
         "title": "Add tests for spdx \"relationshipType\": \"PACKAGE_OF\""
       },
       {
-        "date": "2025-01-27",
-        "label": "#1190",
-        "title": "adr for conceptual view"
-      },
-      {
         "date": "2025-01-29",
         "label": "#1206",
         "title": "Simplified relationship tests a bit"
@@ -1631,11 +1506,6 @@
       },
       {
         "date": "2025-02-04",
-        "label": "#1234",
-        "title": "relationship filtering test for #1232"
-      },
-      {
-        "date": "2025-02-04",
         "label": "#1237",
         "title": "Fix issue with duplicate CDX nodes"
       },
@@ -1643,11 +1513,6 @@
         "date": "2025-02-04",
         "label": "#1238",
         "title": "chore: prepare release 0.2.2"
-      },
-      {
-        "date": "2025-02-05",
-        "label": "#1200",
-        "title": "adr for external references"
       },
       {
         "date": "2025-02-05",
@@ -1668,16 +1533,6 @@
         "date": "2025-02-05",
         "label": "#1250",
         "title": "fix: add index for organizations by name"
-      },
-      {
-        "date": "2025-02-06",
-        "label": "#1240",
-        "title": "Implement sbom_external_node entity (ADR 00003-external-references)"
-      },
-      {
-        "date": "2025-02-06",
-        "label": "#1251",
-        "title": "Another set of perf indexes based on recent analysis"
       },
       {
         "date": "2025-02-06",
@@ -1718,11 +1573,6 @@
         "date": "2025-02-07",
         "label": "#1262",
         "title": "doc: adds importer"
-      },
-      {
-        "date": "2025-02-07",
-        "label": "#1263",
-        "title": "Add more cdx SBOM examples"
       },
       {
         "date": "2025-02-07",
@@ -1771,18 +1621,8 @@
       },
       {
         "date": "2025-02-10",
-        "label": "#1273",
-        "title": "chore: add db conn env vars"
-      },
-      {
-        "date": "2025-02-10",
         "label": "#1274",
         "title": "chore: prepare new release 0.2.3"
-      },
-      {
-        "date": "2025-02-10",
-        "label": "#1276",
-        "title": "typo: fix pg conf typo for embedded db"
       },
       {
         "date": "2025-02-11",
@@ -1821,11 +1661,6 @@
       },
       {
         "date": "2025-02-12",
-        "label": "#1292",
-        "title": "perf- add correct indexes for api/v2/purl?q="
-      },
-      {
-        "date": "2025-02-12",
         "label": "#1293",
         "title": "TC-2243 TC-2244 TC-2246 OSV GHSA - Ecosystem Hex (Erlang), Swift, Pub (Dart/Flutter)"
       },
@@ -1838,11 +1673,6 @@
         "date": "2025-02-12",
         "label": "#1295",
         "title": "chore: prepare release 0.2.4"
-      },
-      {
-        "date": "2025-02-12",
-        "label": "#1297",
-        "title": "perf: add sort indexes for qualified_purl"
       },
       {
         "date": "2025-02-13",
@@ -1868,11 +1698,6 @@
         "date": "2025-02-14",
         "label": "#1304",
         "title": "chore: otel updates"
-      },
-      {
-        "date": "2025-02-17",
-        "label": "#1303",
-        "title": "Resolve cdx ext references"
       },
       {
         "date": "2025-02-17",
@@ -1913,11 +1738,6 @@
         "date": "2025-02-20",
         "label": "#1302",
         "title": "TC-2165 OSV GHSA - Ecosystem Maven: add test"
-      },
-      {
-        "date": "2025-02-20",
-        "label": "#1318",
-        "title": "prep for external references in api/v2/analysis/component"
       },
       {
         "date": "2025-02-20",
@@ -2040,11 +1860,6 @@
         "title": "fix: find analysis components by q=purl"
       },
       {
-        "date": "2025-02-28",
-        "label": "#1378",
-        "title": "fix: external sbom cdx example and tightened related tests"
-      },
-      {
         "date": "2025-03-03",
         "label": "#1353",
         "title": "add group field into sbom_package entity"
@@ -2060,21 +1875,6 @@
         "title": "style: removes blank spaces"
       },
       {
-        "date": "2025-03-04",
-        "label": "#1383",
-        "title": "fix: analysis graph needs to consult graph_cache for external sboms"
-      },
-      {
-        "date": "2025-03-04",
-        "label": "#1389",
-        "title": "chore: add analysis graph endpoint test for cdx rh product variant"
-      },
-      {
-        "date": "2025-03-05",
-        "label": "#1390",
-        "title": "chore: update some analysis graph sbom test/data"
-      },
-      {
         "date": "2025-03-05",
         "label": "#1391",
         "title": "[Snyk] Upgrade antora from 3.1.9 to 3.1.10"
@@ -2083,11 +1883,6 @@
         "date": "2025-03-06",
         "label": "#1399",
         "title": "fix: don't create duplicate documents when ingesting in parallel (spdx)"
-      },
-      {
-        "date": "2025-03-07",
-        "label": "#1400",
-        "title": "fix: ancestor query so that any external parent sboms are returned"
       },
       {
         "date": "2025-03-07",
@@ -2135,29 +1930,14 @@
         "title": "docs: improve documentation of SBOM APIs"
       },
       {
-        "date": "2025-03-12",
-        "label": "#1406",
-        "title": "fix: imageindex>imagevariant external sboms"
-      },
-      {
         "date": "2025-03-13",
         "label": "#1331",
         "title": "TC-2176 Enable Downloading of licenses from single SBOM"
       },
       {
         "date": "2025-03-13",
-        "label": "#1415",
-        "title": "perf: advisory and vuln endpoints"
-      },
-      {
-        "date": "2025-03-13",
         "label": "#1418",
         "title": "fix: prevent duplicate PURLs or CPEs being returned"
-      },
-      {
-        "date": "2025-03-13",
-        "label": "#1420",
-        "title": "perf: change cvss related pg funcs to immutable parallel safe and a few key indexes"
       },
       {
         "date": "2025-03-14",
@@ -2166,18 +1946,8 @@
       },
       {
         "date": "2025-03-14",
-        "label": "#1424",
-        "title": "perf: change version related pg funcs to IMMUTABLE PARALLEL SAFE"
-      },
-      {
-        "date": "2025-03-14",
         "label": "#1426",
         "title": "refactor: remove three later PURL processing in more places"
-      },
-      {
-        "date": "2025-03-14",
-        "label": "#1427",
-        "title": "chore: ensure spdx coverage on prod_comp, src_binary relationships"
       },
       {
         "date": "2025-03-14",
@@ -2188,11 +1958,6 @@
         "date": "2025-03-17",
         "label": "#1422",
         "title": "feat: add endpoint to process multiple purls"
-      },
-      {
-        "date": "2025-03-18",
-        "label": "#1433",
-        "title": "chore: add analysis graph spdx ancestor test"
       },
       {
         "date": "2025-03-18",
@@ -2228,11 +1993,6 @@
         "date": "2025-03-21",
         "label": "#1452",
         "title": "fix: prevent an OOM situation by using a stream as result"
-      },
-      {
-        "date": "2025-03-24",
-        "label": "#1451",
-        "title": "fix: refactor external sbom"
       },
       {
         "date": "2025-03-24",
@@ -2285,16 +2045,6 @@
         "title": "feat: add score to response"
       },
       {
-        "date": "2025-03-26",
-        "label": "#1477",
-        "title": "chore: incremental refactor of get_purl"
-      },
-      {
-        "date": "2025-03-26",
-        "label": "#1478",
-        "title": "chore: final set of perf improvements before upcoming release"
-      },
-      {
         "date": "2025-03-27",
         "label": "#1479",
         "title": "refactor: common code for criterion benches"
@@ -2303,11 +2053,6 @@
         "date": "2025-03-27",
         "label": "#1481",
         "title": "chore: simplify the internal API, add instrumentation"
-      },
-      {
-        "date": "2025-03-27",
-        "label": "#1482",
-        "title": "chore: add back advisory_vuln index"
       },
       {
         "date": "2025-03-27",
@@ -2328,11 +2073,6 @@
         "date": "2025-03-28",
         "label": "#1488",
         "title": "chore: prepare next release"
-      },
-      {
-        "date": "2025-03-31",
-        "label": "#1490",
-        "title": "chore: refine analysis productA/productB>component"
       },
       {
         "date": "2025-03-31",
@@ -2375,11 +2115,6 @@
         "title": "fix: TC-2388 OSV range with last_affected"
       },
       {
-        "date": "2025-04-02",
-        "label": "#1513",
-        "title": "fix: ensure load order does not impact analysis graph dependency queries"
-      },
-      {
         "date": "2025-04-03",
         "label": "#1511",
         "title": "chore: prepare release 0.2.14"
@@ -2408,11 +2143,6 @@
         "date": "2025-04-04",
         "label": "#1518",
         "title": "chore: update otel dependencies"
-      },
-      {
-        "date": "2025-04-04",
-        "label": "#1522",
-        "title": "chore: remove imageindex>imagevariant custom codepath."
       },
       {
         "date": "2025-04-04",
@@ -2481,11 +2211,6 @@
       },
       {
         "date": "2025-04-10",
-        "label": "#1545",
-        "title": "feat: implement api/v2/analysis/latest/component"
-      },
-      {
-        "date": "2025-04-10",
         "label": "#1548",
         "title": "fix: return 400 instead of 500 in case of validation errors"
       },
@@ -2508,11 +2233,6 @@
         "date": "2025-04-15",
         "label": "#1556",
         "title": "fix: Python versions PLSQL comparator (TC-2469)"
-      },
-      {
-        "date": "2025-04-15",
-        "label": "#1561",
-        "title": "chore: add middleware analysis latest tests"
       },
       {
         "date": "2025-04-15",
@@ -2611,18 +2331,8 @@
       },
       {
         "date": "2025-04-30",
-        "label": "#1586",
-        "title": "perf: minor analysis graph loading optimisation"
-      },
-      {
-        "date": "2025-04-30",
         "label": "#1587",
         "title": "perf: minor analysis graph loading optimisation [Backport release/0.2.z]"
-      },
-      {
-        "date": "2025-04-30",
-        "label": "#1593",
-        "title": "chore: rollback a minor perf"
       },
       {
         "date": "2025-05-02",
@@ -2688,11 +2398,6 @@
         "date": "2025-05-07",
         "label": "#1585",
         "title": "feat: allow string arrays to be queried in the q= syntax"
-      },
-      {
-        "date": "2025-05-07",
-        "label": "#1588",
-        "title": "fix: ensure middleware sboms work with analysis graph and optimise graph cache"
       },
       {
         "date": "2025-05-07",
@@ -3271,11 +2976,6 @@
       },
       {
         "date": "2025-06-23",
-        "label": "#1777",
-        "title": "fix: ensure latest cpe query returns latest roots"
-      },
-      {
-        "date": "2025-06-23",
         "label": "#1783",
         "title": "ci: using the same ubuntu version across workflows"
       },
@@ -3321,11 +3021,6 @@
       },
       {
         "date": "2025-06-24",
-        "label": "#1792",
-        "title": "chore: further in memory graph optimisations"
-      },
-      {
-        "date": "2025-06-24",
         "label": "#1797",
         "title": "fix: set RUSTFLAGS for Windows binary build [Backport release/0.3.z]"
       },
@@ -3336,11 +3031,6 @@
       },
       {
         "date": "2025-06-30",
-        "label": "#1813",
-        "title": "fix: add indexes to sbom_node_checksum"
-      },
-      {
-        "date": "2025-06-30",
         "label": "#1814",
         "title": "prepare release 0.3.1"
       },
@@ -3348,11 +3038,6 @@
         "date": "2025-06-30",
         "label": "#1815",
         "title": "fix: add indexes to sbom_node_checksum [Backport release/0.3.z]"
-      },
-      {
-        "date": "2025-07-01",
-        "label": "#1816",
-        "title": "chore: minor analysis graph perf improvements"
       },
       {
         "date": "2025-07-01",
@@ -3386,11 +3071,6 @@
       },
       {
         "date": "2025-07-03",
-        "label": "#1825",
-        "title": "refactor: optimise graph loading"
-      },
-      {
-        "date": "2025-07-03",
         "label": "#1827",
         "title": "chore: removes unused dependencies"
       },
@@ -3413,11 +3093,6 @@
         "date": "2025-07-04",
         "label": "#1658",
         "title": "Documentation for RHSSO and RHODF"
-      },
-      {
-        "date": "2025-07-04",
-        "label": "#1832",
-        "title": "chore: missing commit"
       },
       {
         "date": "2025-07-04",
@@ -3573,11 +3248,6 @@
         "date": "2025-07-16",
         "label": "#1878",
         "title": "test(storage): also test DispatchBackend"
-      },
-      {
-        "date": "2025-07-16",
-        "label": "#1879",
-        "title": "fix: allow cyclonedx to do nested external sboms"
       },
       {
         "date": "2025-07-16",
@@ -3761,11 +3431,6 @@
       },
       {
         "date": "2025-09-04",
-        "label": "#1953",
-        "title": "fix: ensure we never match on cdx top level component metadata when r…"
-      },
-      {
-        "date": "2025-09-04",
         "label": "#1954",
         "title": "fix: ensure we never match on cdx top level component metadata when r… [Backport release/0.3.z]"
       },
@@ -3773,11 +3438,6 @@
         "date": "2025-09-05",
         "label": "#1956",
         "title": "Revert https://github.com/guacsec/trustify/pull/1921 [Backport release/0.3.z]"
-      },
-      {
-        "date": "2025-09-08",
-        "label": "#1957",
-        "title": "fix: narrow latest search when using q= or name"
       },
       {
         "date": "2025-09-08",
@@ -4456,11 +4116,6 @@
       },
       {
         "date": "2025-12-01",
-        "label": "#2153",
-        "title": "latest-endpoint: fix missing hash checksum in resolve_rh_variant_latest_filter_container_cdx test data "
-      },
-      {
-        "date": "2025-12-01",
         "label": "#2154",
         "title": "Don't resolve external nodes during graph loading"
       },
@@ -4520,11 +4175,6 @@
         "title": "feat: include AdvisoryHead in PurlStatus"
       },
       {
-        "date": "2025-12-09",
-        "label": "#2175",
-        "title": "latest: test data for TC-3278"
-      },
-      {
         "date": "2025-12-10",
         "label": "#2177",
         "title": "doc: Update gensbom README"
@@ -4540,19 +4190,9 @@
         "title": "test(analysis): add tests for evolving the state over time"
       },
       {
-        "date": "2025-12-16",
-        "label": "#2184",
-        "title": "latest: fix TC-3278 add more test data"
-      },
-      {
         "date": "2026-01-06",
         "label": "#2171",
         "title": "test(analysis): create a reproducer test for TC-3286"
-      },
-      {
-        "date": "2026-01-13",
-        "label": "#2185",
-        "title": "Tc 3278 fix latest filtering"
       },
       {
         "date": "2026-01-14",
@@ -4651,11 +4291,6 @@
       },
       {
         "date": "2026-02-04",
-        "label": "#2219",
-        "title": "latest analysis: fixes TC-3278 and TC-3073 by providing tie breaker logic for when equal external node_id"
-      },
-      {
-        "date": "2026-02-04",
         "label": "#2223",
         "title": "feat: migrate API consumers to read from advisory_vulnerability_score table"
       },
@@ -4703,11 +4338,6 @@
         "date": "2026-02-17",
         "label": "#2248",
         "title": "feat: add xz to the xtask container"
-      },
-      {
-        "date": "2026-02-17",
-        "label": "#2249",
-        "title": "latest: upstream should not be used for determining latest top level root"
       },
       {
         "date": "2026-02-18",
@@ -4823,16 +4453,6 @@
         "date": "2026-03-05",
         "label": "#2274",
         "title": "ci: skip benchmark coverage when changes happens in etc"
-      },
-      {
-        "date": "2026-03-09",
-        "label": "#2279",
-        "title": "analysis: perf improvements for latest endpoints"
-      },
-      {
-        "date": "2026-03-10",
-        "label": "#2281",
-        "title": "supplier: should be type insensitive."
       },
       {
         "date": "2026-03-10",
@@ -5035,9 +4655,124 @@
         "title": "Backport PR #2337"
       },
       {
+        "date": "2026-05-04",
+        "label": "#2345",
+        "title": "test: check for btrfs mount option too"
+      },
+      {
+        "date": "2026-05-04",
+        "label": "#2346",
+        "title": "chore: add some more instrumentation"
+      },
+      {
+        "date": "2026-05-05",
+        "label": "#2348",
+        "title": "docs: refresh documentation"
+      },
+      {
         "date": "2026-05-06",
         "label": "#2338",
         "title": "Improve API for better pagination"
+      },
+      {
+        "date": "2026-05-06",
+        "label": "#2350",
+        "title": "docs: extend documentation about instrumentation"
+      },
+      {
+        "date": "2026-05-06",
+        "label": "#2352",
+        "title": "chore: update some dependencies"
+      },
+      {
+        "date": "2026-05-07",
+        "label": "#2347",
+        "title": "test: basic tests for CLI covering SBOM and advisories"
+      },
+      {
+        "date": "2026-05-07",
+        "label": "#2349",
+        "title": "Add a count of sboms to the models response"
+      },
+      {
+        "date": "2026-05-08",
+        "label": "#2351",
+        "title": "feat!: change limit=0 to return no items and enforce maximum limit"
+      },
+      {
+        "date": "2026-05-15",
+        "label": "#2354",
+        "title": "chore!: change all APIs to v3, or mark them deprecated"
+      },
+      {
+        "date": "2026-05-18",
+        "label": "#2360",
+        "title": "Preparing next upstream release"
+      },
+      {
+        "date": "2026-05-18",
+        "label": "#2361",
+        "title": "chore: create a clone of the /v2/purl/recommend endpoint"
+      },
+      {
+        "date": "2026-05-21",
+        "label": "#2365",
+        "title": "test: add a test to ensure loop references don't cause a problem"
+      },
+      {
+        "date": "2026-05-26",
+        "label": "#2367",
+        "title": "Fix two possible issues when analysis graph cache gets under pressure"
+      },
+      {
+        "date": "2026-05-28",
+        "label": "#2366",
+        "title": "docs: Update CONVENTIONS.md file"
+      },
+      {
+        "date": "2026-06-01",
+        "label": "#2374",
+        "title": "chore: prepare release 0.4.13"
+      },
+      {
+        "date": "2026-06-02",
+        "label": "#2356",
+        "title": "feat: implement the read-only database connection"
+      },
+      {
+        "date": "2026-06-02",
+        "label": "#2375",
+        "title": "chore: prepare next pre-release"
+      },
+      {
+        "date": "2026-06-03",
+        "label": "#2378",
+        "title": "chore: fix main build after merge"
+      },
+      {
+        "date": "2026-06-03",
+        "label": "#2380",
+        "title": "chore: document env-vars for data migration"
+      },
+      {
+        "date": "2026-06-05",
+        "label": "#2381",
+        "title": "docs: document migration reversibility requirement in CONVENTIONS.md"
+      },
+      {
+        "date": "2026-06-05",
+        "label": "#2382",
+        "title": "ci: skip tests for markdown-only changes"
+      },
+      {
+        "date": "2026-06-08",
+        "label": "#2384",
+        "title": "docs: fix method for \"force run\""
+      },
+      {
+        "date": "2026-06-09",
+        "label": "#2358",
+        "title": "Added ADR for architectural standards"
       }
     ]
   }
