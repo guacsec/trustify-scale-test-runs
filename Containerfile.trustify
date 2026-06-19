@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/ubi:latest AS builder
+FROM registry.access.redhat.com/ubi10/ubi:latest AS builder
 
 RUN uname -m && \
     dnf install -y --setopt=install_weak_deps=False \
@@ -10,7 +10,7 @@ RUN uname -m && \
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain 1.92.0
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain 1.95.0
 
 ARG rev
 RUN ["bash", "-c", "\
@@ -30,7 +30,7 @@ RUN ["bash", "-c", "\
 
 RUN cd trustify && cargo build --release --no-default-features --features bundled
 
-FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
+FROM registry.access.redhat.com/ubi10/ubi-minimal:latest
 
 RUN microdnf install -y --setopt=install_weak_deps=0 \
         openssl && \
