@@ -4773,6 +4773,61 @@
         "date": "2026-06-09",
         "label": "#2358",
         "title": "Added ADR for architectural standards"
+      },
+      {
+        "date": "2026-06-11",
+        "label": "#2386",
+        "title": "build: update dependencies"
+      },
+      {
+        "date": "2026-06-11",
+        "label": "#2387",
+        "title": "fix!: make all DELETE endpoints idempotent"
+      },
+      {
+        "date": "2026-06-12",
+        "label": "#2364",
+        "title": "Add `DELETE /api/v3/sbom` endpoint for batch SBOMs deletion"
+      },
+      {
+        "date": "2026-06-12",
+        "label": "#2388",
+        "title": "chore: aligning the instrumentation with standard"
+      },
+      {
+        "date": "2026-06-12",
+        "label": "#2396",
+        "title": "Align trustify-ui dependency"
+      },
+      {
+        "date": "2026-06-15",
+        "label": "#2395",
+        "title": "Configure a specific rust version "
+      },
+      {
+        "date": "2026-06-15",
+        "label": "#2398",
+        "title": "Fix trustify-ui branch 0.5.z"
+      },
+      {
+        "date": "2026-06-15",
+        "label": "#2400",
+        "title": "Add `DELETE /api/v3/sbom` endpoint for batch SBOMs deletion [Backport release/0.5.z]"
+      },
+      {
+        "date": "2026-06-16",
+        "label": "#2405",
+        "title": "[0.5.z] Configure a specific rust version"
+      },
+      {
+        "date": "2026-06-17",
+        "label": "#2385",
+        "title": "feat(tls): add configurable TLS security profile"
+      },
+      {
+        "date": "2026-06-18",
+        "label": "#2406",
+        "title": "feat(tls): add configurable TLS security profile [Backport release/0.5.z]"
       }
     ]
   }
