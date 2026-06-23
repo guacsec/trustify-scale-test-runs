@@ -4828,6 +4828,16 @@
         "date": "2026-06-18",
         "label": "#2406",
         "title": "feat(tls): add configurable TLS security profile [Backport release/0.5.z]"
+      },
+      {
+        "date": "2026-06-22",
+        "label": "#2407",
+        "title": "Improve performance of latest endpoint in large data deployments"
+      },
+      {
+        "date": "2026-06-22",
+        "label": "#2409",
+        "title": "prepare releasse 0.4.14"
       }
     ]
   }
