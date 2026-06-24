@@ -4838,6 +4838,11 @@
         "date": "2026-06-22",
         "label": "#2409",
         "title": "prepare releasse 0.4.14"
+      },
+      {
+        "date": "2026-06-23",
+        "label": "#2410",
+        "title": "build: don't exclude download, it's required"
       }
     ]
   }
