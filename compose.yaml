@@ -156,7 +156,7 @@ services:
         else
           echo "Importing dump"
           xzcat /cache/dump.sql.xz | psql -v ON_ERROR_STOP=1
-          echo "VACUUM ANALYZE; REINDEX database trustify;" | psql
+          echo "ANALYZE;" | psql
         fi
 
   trustify-migrate:
