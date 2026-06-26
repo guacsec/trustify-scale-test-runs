@@ -4843,6 +4843,11 @@
         "date": "2026-06-23",
         "label": "#2410",
         "title": "build: don't exclude download, it's required"
+      },
+      {
+        "date": "2026-06-25",
+        "label": "#2412",
+        "title": "Materialize ancestor information"
       }
     ]
   }
