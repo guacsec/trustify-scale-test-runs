@@ -4863,6 +4863,11 @@
         "date": "2026-06-26",
         "label": "#2416",
         "title": "fix: improve database health check error reporting and correctness"
+      },
+      {
+        "date": "2026-06-27",
+        "label": "#2418",
+        "title": "fix: redact database password from tracing span output [Backport release/0.5.z]"
       }
     ]
   }
