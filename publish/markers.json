@@ -4868,6 +4868,26 @@
         "date": "2026-06-27",
         "label": "#2418",
         "title": "fix: redact database password from tracing span output [Backport release/0.5.z]"
+      },
+      {
+        "date": "2026-06-29",
+        "label": "#2417",
+        "title": "fix: improve database health check error reporting and correctness [Backport release/0.5.z]"
+      },
+      {
+        "date": "2026-06-29",
+        "label": "#2419",
+        "title": "chore: show progress during data migration"
+      },
+      {
+        "date": "2026-06-29",
+        "label": "#2420",
+        "title": "fix: enable comma-separated values for MIGRATION_DATA_SKIP env var"
+      },
+      {
+        "date": "2026-06-29",
+        "label": "#2423",
+        "title": "chore: show progress during data migration [Backport release/0.5.z]"
       }
     ]
   }
