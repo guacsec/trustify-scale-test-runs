@@ -4888,6 +4888,26 @@
         "date": "2026-06-29",
         "label": "#2423",
         "title": "chore: show progress during data migration [Backport release/0.5.z]"
+      },
+      {
+        "date": "2026-06-30",
+        "label": "#2424",
+        "title": "fix: optimize expanded_license migration backfill"
+      },
+      {
+        "date": "2026-06-30",
+        "label": "#2425",
+        "title": "fix: enable comma-separated values for MIGRATION_DATA_SKIP env var [Backport release/0.5.z]"
+      },
+      {
+        "date": "2026-06-30",
+        "label": "#2427",
+        "title": "fix!: Serve swagger UI on the /openapi endpoint"
+      },
+      {
+        "date": "2026-06-30",
+        "label": "#2428",
+        "title": "fix: optimize expanded_license migration backfill [Backport release/0.5.z]"
       }
     ]
   }
