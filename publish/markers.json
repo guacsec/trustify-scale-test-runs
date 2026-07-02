@@ -4908,6 +4908,26 @@
         "date": "2026-06-30",
         "label": "#2428",
         "title": "fix: optimize expanded_license migration backfill [Backport release/0.5.z]"
+      },
+      {
+        "date": "2026-07-01",
+        "label": "#2422",
+        "title": "ci: enable CI workflows for feature branch PRs"
+      },
+      {
+        "date": "2026-07-01",
+        "label": "#2430",
+        "title": "perf: batch N+1 queries in SBOM and advisory summary construction"
+      },
+      {
+        "date": "2026-07-01",
+        "label": "#2431",
+        "title": "fix!: Serve swagger UI on the /openapi endpoint [Backport release/0.5.z]"
+      },
+      {
+        "date": "2026-07-01",
+        "label": "#2434",
+        "title": "chore: prepare next version"
       }
     ]
   }
