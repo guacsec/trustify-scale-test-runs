@@ -900,6 +900,11 @@
         "title": "Refactor query logic to support querying of nested structures"
       },
       {
+        "date": "2024-11-07",
+        "label": "#980",
+        "title": "chore: prepare release 0.1.0-alpha.22"
+      },
+      {
         "date": "2024-11-08",
         "label": "#983",
         "title": "Revert the dot-notation in queries"
@@ -3810,6 +3815,16 @@
         "title": "Update redhat-sboms importer source for 2.2"
       },
       {
+        "date": "2025-10-24",
+        "label": "#2063",
+        "title": "chore: change analysis status permission [Backport release/0.4.z]"
+      },
+      {
+        "date": "2025-10-24",
+        "label": "#2065",
+        "title": "Update redhat-sboms importer source for 2.2 [Backport release/0.4.z]"
+      },
+      {
         "date": "2025-10-27",
         "label": "#2052",
         "title": "doc(adr): Delete orphaned packages"
@@ -3938,6 +3953,11 @@
         "date": "2025-11-11",
         "label": "#2080",
         "title": "fix: package ingestion race condition (TC-3152)"
+      },
+      {
+        "date": "2025-11-11",
+        "label": "#2097",
+        "title": "Ensure rejected CVE's are ingested (and queryable) properly"
       },
       {
         "date": "2025-11-11",
@@ -4580,6 +4600,11 @@
         "title": "perf(purl): batch purl_status and related entity loading in recommend_purls"
       },
       {
+        "date": "2026-04-09",
+        "label": "#2317",
+        "title": "docs: add CONVENTIONS.md coding conventions file"
+      },
+      {
         "date": "2026-04-10",
         "label": "#2314",
         "title": "Implement CVSS score changes"
@@ -4928,6 +4953,91 @@
         "date": "2026-07-01",
         "label": "#2434",
         "title": "chore: prepare next version"
+      },
+      {
+        "date": "2026-07-02",
+        "label": "#2413",
+        "title": "perf: add locust based perf testing."
+      },
+      {
+        "date": "2026-07-02",
+        "label": "#2436",
+        "title": "perf: batch N+1 queries in SBOM and advisory summary construction [Backport release/0.5.z]"
+      },
+      {
+        "date": "2026-07-02",
+        "label": "#2437",
+        "title": "perf: add optional advisory severity summary to SBOM list endpoint"
+      },
+      {
+        "date": "2026-07-02",
+        "label": "#2438",
+        "title": "fix: set conventional commit title to the auto generated openapi PR"
+      },
+      {
+        "date": "2026-07-02",
+        "label": "#2439",
+        "title": "perf: remove gist indexes on qualified_purl to ensure query planner chooses optimal plan searching for packages"
+      },
+      {
+        "date": "2026-07-02",
+        "label": "#2441",
+        "title": "perf: remove gist indexes on qualified_purl to ensure query planner chooses optimal plan searching for packages [Backport release/0.5.z]"
+      },
+      {
+        "date": "2026-07-03",
+        "label": "#2443",
+        "title": "chore: add cache hit/miss instrumentation to pagination total cache"
+      },
+      {
+        "date": "2026-07-03",
+        "label": "#2444",
+        "title": "perf: add optional advisory severity summary to SBOM list endpoint [Backport release/0.5.z]"
+      },
+      {
+        "date": "2026-07-03",
+        "label": "#2445",
+        "title": "chore: update dependencies"
+      },
+      {
+        "date": "2026-07-03",
+        "label": "#2447",
+        "title": "chore: add cache hit/miss instrumentation to pagination total cache [Backport release/0.5.z]"
+      },
+      {
+        "date": "2026-07-03",
+        "label": "#2448",
+        "title": "perf: fix /perf-test CI job"
+      },
+      {
+        "date": "2026-07-03",
+        "label": "#2449",
+        "title": "prepare next release"
+      },
+      {
+        "date": "2026-07-06",
+        "label": "#2451",
+        "title": "ci: upgrade ubuntu to 22.04"
+      },
+      {
+        "date": "2026-07-07",
+        "label": "#2450",
+        "title": "feat: add PATCH endpoint for partial SBOM group assignment updates"
+      },
+      {
+        "date": "2026-07-07",
+        "label": "#2453",
+        "title": "ci: upgrade ubuntu to 22.04 [Backport release/0.5.z]"
+      },
+      {
+        "date": "2026-07-08",
+        "label": "#2435",
+        "title": "feat(entity): add exploit intelligence job tracking entities and migration"
+      },
+      {
+        "date": "2026-07-08",
+        "label": "#2452",
+        "title": "perf: add oidc auth to /perf-tool and some more tests"
       }
     ]
   }
