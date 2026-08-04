@@ -33,7 +33,7 @@ if [ -f "${REPORTS[0]}" ]; then
 else
     EARLIEST=""
 fi
-SINCE="${EARLIEST:-2024-08-01}"
+SINCE="${EARLIEST:-2026-04-01}"
 
 echo "Fetching merged PRs from ${REPO} since ${SINCE}..."
 
