@@ -127,7 +127,7 @@ services:
         if [ -n "$(ls -A /data 2>/dev/null)" ]; then
           echo "Storage already populated, skipping extraction"
         else
-          tar --strip-components=5 -xvf /cache/dump.tar -C /data
+          tar --strip-components=1 -xvf /cache/dump.tar -C /data
         fi
 
   replay-dump:
