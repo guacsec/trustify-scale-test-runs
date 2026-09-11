@@ -10,8 +10,8 @@
   "get_sbom_related": null,
   "get_vulnerability": null,
   // for get_sbom_packages and get_sbom_related we must use the UUID
-  // "get_sbom_packages": "0195baea-42e3-7842-a0e3-4c7874263954",
-  // "get_sbom_related": "0195baea-42e3-7842-a0e3-4c7874263954",
+  "get_sbom_packages": "0195baea-42e3-7842-a0e3-4c7874263954",
+  "get_sbom_related": "0195baea-42e3-7842-a0e3-4c7874263954",
   // "get_vulnerability": "CVE-2023-39325",
   "sbom_license_ids": "urn:uuid:01973124-d4ab-7163-b104-331632a21144",
   "analyze_purl": "pkg:rpm/redhat/eap7-activemq-artemis-native@1.0.2-3.redhat_00004.1.el7eap?arch=noarch&epoch=1",
