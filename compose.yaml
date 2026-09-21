@@ -207,6 +207,7 @@ services:
       UI_ISSUER_URL: http://keycloak:8080/realms/trustify
       AUTHENTICATOR_OIDC_CLIENT_IDS: frontend,walker
       AUTHENTICATOR_OIDC_ISSUER_URL: http://keycloak:8080/realms/trustify
+      TRUSTD_RECOMMEND_PATTERNS: "^(.+)[.-]redhat-[0-9]+$"
     healthcheck:
       test: "curl --fail http://localhost:9010/health/live || exit 1"
       interval: 2s
