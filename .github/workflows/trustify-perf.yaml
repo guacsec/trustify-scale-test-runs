@@ -1,0 +1,302 @@
+name: Trustify performance tests
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Which test to run
+        type: choice
+        options: [daily, pr]
+        default: daily
+        required: true
+      source_repository:
+        description: Trustify repository to check out (PR mode)
+        type: string
+        required: false
+      source_sha:
+        description: Trustify commit to test (PR mode)
+        type: string
+        required: false
+      source_ref:
+        description: Trustify branch name for report metadata (PR mode)
+        type: string
+        required: false
+      pr_number:
+        description: Trustify pull request number (PR mode)
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: run
+  cancel-in-progress: false
+
+jobs:
+  run:
+    if: github.event_name == 'schedule' || inputs.mode == 'daily' || inputs.mode == 'pr'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    permissions:
+      contents: read
+    outputs:
+      mode: ${{ steps.meta.outputs.mode }}
+      run_dir: ${{ steps.meta.outputs.run_dir }}
+    steps:
+      - name: Check test inputs
+        if: inputs.mode == 'pr'
+        env:
+          SOURCE_REPOSITORY: ${{ inputs.source_repository }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          test -n "$SOURCE_REPOSITORY" || { echo "source_repository is required in PR mode"; exit 1; }
+          test -n "$SOURCE_SHA" || { echo "source_sha is required in PR mode"; exit 1; }
+          test -n "$PR_NUMBER" || { echo "pr_number is required in PR mode"; exit 1; }
+
+      - name: Check out scale-test-runs
+        uses: actions/checkout@v6
+        with:
+          path: scale
+
+      - name: Check out Trustify
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ inputs.source_repository || 'guacsec/trustify' }}
+          ref: ${{ inputs.source_sha || 'main' }}
+          path: trustify
+          persist-credentials: false
+
+      - name: Maximize build space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force
+          for path in "${JAVA_HOME_8_X64:-}" "${JAVA_HOME_11_X64:-}" "${JAVA_HOME_17_X64:-}" "${RUBY_PATH:-}"; do
+            if [ -n "$path" ]; then sudo rm -rf "$path"; fi
+          done
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.0.1
+
+      - name: Set run metadata
+        id: meta
+        env:
+          MODE: ${{ github.event_name == 'schedule' && 'daily' || inputs.mode }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          source_sha=${SOURCE_SHA:-$(git -C trustify rev-parse HEAD)}
+          short_sha=${source_sha:0:7}
+          timestamp=$(date -u +%Y-%m-%dT%H-%M-%S)
+          if [ "$MODE" = pr ]; then
+            run_dir="pr_${PR_NUMBER}_${timestamp}_${short_sha}"
+          else
+            run_dir="${timestamp}_${short_sha}"
+          fi
+          {
+            echo "mode=$MODE"
+            echo "run_dir=$run_dir"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build scale stack
+        working-directory: scale
+        env:
+          SCALE_REV: ${{ inputs.mode == 'pr' && format('pr/{0}', inputs.pr_number) || 'main' }}
+        run: |
+          docker compose -f compose.yaml build \
+            --build-arg rev="$SCALE_REV" \
+            trustify-migrate trustify
+
+      - name: Start scale stack
+        working-directory: scale
+        run: docker compose -f compose.yaml up -d --wait trustify
+
+      - name: Run Locust
+        working-directory: trustify/tools/perf
+        env:
+          RUN_MODE: ${{ steps.meta.outputs.mode }}
+          RUN_DIR: ${{ steps.meta.outputs.run_dir }}
+          SOURCE_REPOSITORY: ${{ inputs.source_repository || 'guacsec/trustify' }}
+          SOURCE_REF: ${{ inputs.source_ref || 'main' }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          ISSUER_URL: http://localhost:8090/realms/trustify
+          CLIENT_ID: walker
+          # Matches the local-only dummy credential in scale/compose.yaml.
+          CLIENT_SECRET: R8A6KFeyxJsMDBhjfHbpZTIF0GWt43HP
+          TOOLS_PERF_SCENARIO_FILE: etc/scenarios/main/full-20260317T023702Z.json5
+          TOOLS_PERF_WAIT_TIME_FROM: "0"
+          TOOLS_PERF_WAIT_TIME_TO: "0"
+        run: |
+          mkdir -p out
+          source_sha=${SOURCE_SHA:-$(git -C ../.. rev-parse HEAD)}
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          if [ "$RUN_MODE" = pr ]; then
+            jq -n \
+              --arg kind pull-request \
+              --arg pr "$PR_NUMBER" \
+              --arg pr_url "https://github.com/guacsec/trustify/pull/$PR_NUMBER" \
+              --arg branch "$SOURCE_REF" \
+              --arg commit "$source_sha" \
+              --arg commit_url "https://github.com/$SOURCE_REPOSITORY/commit/$source_sha" \
+              --arg dataset scale-20260317T023702Z \
+              --arg scenario "$TOOLS_PERF_SCENARIO_FILE" \
+              --arg run_url "$run_url" \
+              '{kind: $kind, pr: $pr, pr_url: $pr_url, branch: $branch, commit: $commit, commit_url: $commit_url, dataset: $dataset, scenario: $scenario, run_url: $run_url}' \
+              > out/metadata.json
+            uv run locust \
+              --host http://localhost:8080 \
+              -u 10 -r 2 -t 10m \
+              --headless \
+              --html=out/report.html \
+              --csv=out/results \
+              --csv-full-history
+          else
+            jq -n \
+              --arg kind daily \
+              --arg dataset scale-20260317T023702Z \
+              --arg scenario "$TOOLS_PERF_SCENARIO_FILE" \
+              --arg branch main \
+              --arg commit "$source_sha" \
+              --arg commit_url "https://github.com/guacsec/trustify/commit/$source_sha" \
+              --arg run_url "$run_url" \
+              '{kind: $kind, dataset: $dataset, scenario: $scenario, branch: $branch, commit: $commit, commit_url: $commit_url, run_url: $run_url}' \
+              > out/metadata.json
+            uv run locust \
+              --host http://localhost:8080 \
+              -u 10 -r 2 -t 10m \
+              --headless \
+              --html=out/report.html \
+              --csv=out/results \
+              --csv-full-history \
+              --exit-code-on-error 0
+          fi
+
+      - name: Collect scale logs
+        if: always()
+        working-directory: scale
+        run: docker compose -f compose.yaml logs > containers.log || true
+
+      - name: Stop scale stack
+        if: always()
+        working-directory: scale
+        run: docker compose -f compose.yaml down
+
+      - name: Upload Locust results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: locust-${{ steps.meta.outputs.run_dir }}
+          path: trustify/tools/perf/out/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload scale logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scale-logs-${{ steps.meta.outputs.run_dir }}
+          path: scale/containers.log
+          if-no-files-found: warn
+          retention-days: 14
+
+  publish:
+    needs: run
+    if: needs.run.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      - name: Check out scale-test-runs
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          path: scale
+
+      - name: Check out Trustify report generator
+        uses: actions/checkout@v6
+        with:
+          repository: guacsec/trustify
+          ref: main
+          path: trustify-report
+          persist-credentials: false
+
+      - name: Download Locust results
+        uses: actions/download-artifact@v4
+        with:
+          name: locust-${{ needs.run.outputs.run_dir }}
+          path: scale/publish/perf/${{ needs.run.outputs.mode }}/runs/${{ needs.run.outputs.run_dir }}
+
+      - name: Compress CSV results
+        working-directory: scale
+        env:
+          MODE: ${{ needs.run.outputs.mode }}
+          RUN_DIR: ${{ needs.run.outputs.run_dir }}
+        run: gzip -9 "publish/perf/$MODE/runs/$RUN_DIR"/*.csv
+
+      - name: Build dashboard
+        working-directory: scale
+        env:
+          MODE: ${{ needs.run.outputs.mode }}
+        run: |
+          if [ "$MODE" = pr ]; then
+            title="Trustify PR perf tests"
+            target="trustify (scale snapshot)"
+          else
+            title="Trustify load tests"
+            target="trustify (scale snapshot, CI)"
+          fi
+          python3 ../trustify-report/tools/perf/locust_report.py \
+            index "publish/perf/$MODE/runs" -o "publish/perf/$MODE" --prune \
+            --title "$title" --target "$target"
+
+      - name: Write perf dashboard landing page
+        working-directory: scale
+        run: |
+          mkdir -p publish/perf
+          cat > publish/perf/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trustify perf tests</title></head>
+          <body><h1>Trustify perf tests</h1>
+          <ul><li><a href="daily/">Daily load tests</a></li>
+          <li><a href="pr/">Pull request perf tests</a></li></ul>
+          </body></html>
+          EOF
+
+      - name: Commit results to main
+        working-directory: scale
+        env:
+          RUN_DIR: ${{ needs.run.outputs.run_dir }}
+          MODE: ${{ needs.run.outputs.mode }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- publish/perf
+          if git diff --cached --quiet; then
+            echo "No dashboard changes to commit."
+          else
+            git commit -m "perf: publish $MODE run $RUN_DIR"
+            for attempt in 1 2 3; do
+              git push && break
+              if [ "$attempt" -eq 3 ]; then exit 1; fi
+              git pull --rebase origin main
+              sleep 5
+            done
+          fi
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: scale/publish
+
+      - name: Deploy GitHub Pages
+        uses: actions/deploy-pages@v4
