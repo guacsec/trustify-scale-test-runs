@@ -78,9 +78,6 @@ jobs:
             if [ -n "$path" ]; then sudo rm -rf "$path"; fi
           done
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
-
       - name: Set run metadata
         id: meta
         env:
@@ -123,7 +120,7 @@ jobs:
           SOURCE_REF: ${{ inputs.source_ref || 'main' }}
           SOURCE_SHA: ${{ inputs.source_sha }}
           PR_NUMBER: ${{ inputs.pr_number }}
-          ISSUER_URL: http://localhost:8090/realms/trustify
+          ISSUER_URL: http://keycloak:8080/realms/trustify
           CLIENT_ID: walker
           # Matches the local-only dummy credential in scale/compose.yaml.
           CLIENT_SECRET: R8A6KFeyxJsMDBhjfHbpZTIF0GWt43HP
@@ -132,6 +129,29 @@ jobs:
           TOOLS_PERF_WAIT_TIME_TO: "0"
         run: |
           mkdir -p out
+          trustify_container=$(docker compose -f "$GITHUB_WORKSPACE/scale/compose.yaml" ps -q trustify)
+          network=$(docker inspect --format '{{range $name, $network := .NetworkSettings.Networks}}{{$name}}{{end}}' "$trustify_container")
+          test -n "$network" || { echo "Could not find the Trustify Compose network"; exit 1; }
+
+          run_locust() {
+            docker run --rm \
+              --network "$network" \
+              --volume "$GITHUB_WORKSPACE/trustify/tools/perf:/perf" \
+              --workdir /perf \
+              --env ISSUER_URL \
+              --env CLIENT_ID \
+              --env CLIENT_SECRET \
+              --env TOOLS_PERF_SCENARIO_FILE \
+              --env TOOLS_PERF_WAIT_TIME_FROM \
+              --env TOOLS_PERF_WAIT_TIME_TO \
+              python:3.13-slim \
+              sh -ec '
+                pip install --disable-pip-version-check --no-cache-dir "locust==2.37.5" "json5==0.12.0"
+                python -c "from auth import create_provider; import requests; token = create_provider().get_token(); response = requests.get(\"http://trustify:8080/api/v3/importer?total=true\", headers={\"Authorization\": f\"Bearer {token}\"}, timeout=30); response.raise_for_status(); print(\"OIDC authentication preflight passed\")"
+                exec locust "$@"
+              ' locust "$@"
+          }
+
           source_sha=${SOURCE_SHA:-$(git -C ../.. rev-parse HEAD)}
           run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           if [ "$RUN_MODE" = pr ]; then
@@ -147,8 +167,8 @@ jobs:
               --arg run_url "$run_url" \
               '{kind: $kind, pr: $pr, pr_url: $pr_url, branch: $branch, commit: $commit, commit_url: $commit_url, dataset: $dataset, scenario: $scenario, run_url: $run_url}' \
               > out/metadata.json
-            uv run locust \
-              --host http://localhost:8080 \
+            run_locust \
+              --host http://trustify:8080 \
               -u 10 -r 2 -t 10m \
               --headless \
               --html=out/report.html \
@@ -165,8 +185,8 @@ jobs:
               --arg run_url "$run_url" \
               '{kind: $kind, dataset: $dataset, scenario: $scenario, branch: $branch, commit: $commit, commit_url: $commit_url, run_url: $run_url}' \
               > out/metadata.json
-            uv run locust \
-              --host http://localhost:8080 \
+            run_locust \
+              --host http://trustify:8080 \
               -u 10 -r 2 -t 10m \
               --headless \
               --html=out/report.html \
