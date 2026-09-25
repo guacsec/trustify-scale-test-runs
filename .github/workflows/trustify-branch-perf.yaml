@@ -1,0 +1,31 @@
+name: Trustify branch daily performance tests
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    strategy:
+      matrix:
+        # Add release branches here to include them in the daily perf run.
+        branch: [release/0.6.z]
+    steps:
+      - name: Start branch performance run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ matrix.branch }}
+        run: >-
+          gh workflow run trustify-perf.yaml
+          --repo guacsec/trustify-scale-test-runs
+          --ref main
+          --field mode=branch
+          --field branch="$BRANCH"
