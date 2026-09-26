@@ -1,0 +1,11 @@
+{
+  "kind": "pull-request",
+  "pr": "2718",
+  "pr_url": "https://github.com/guacsec/trustify/pull/2718",
+  "branch": "nightly-exp-build",
+  "commit": "8039d453b5fbf521ff7655470881ec38602ebbd6",
+  "commit_url": "https://github.com/rh-jfuller/trustify/commit/8039d453b5fbf521ff7655470881ec38602ebbd6",
+  "dataset": "scale-20260317T023702Z",
+  "scenario": "etc/scenarios/main/full-20260317T023702Z.json5",
+  "run_url": "https://github.com/guacsec/trustify-scale-test-runs/actions/runs/36229214654"
+}
