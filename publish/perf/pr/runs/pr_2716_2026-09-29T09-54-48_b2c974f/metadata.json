@@ -1,0 +1,11 @@
+{
+  "kind": "pull-request",
+  "pr": "2716",
+  "pr_url": "https://github.com/guacsec/trustify/pull/2716",
+  "branch": "jh/switch-to-csaf-rs",
+  "commit": "b2c974f2060fdac3f36d5813d30f7b77d05fdbf7",
+  "commit_url": "https://github.com/ferrous-systems/trustify/commit/b2c974f2060fdac3f36d5813d30f7b77d05fdbf7",
+  "dataset": "scale-20260317T023702Z",
+  "scenario": "etc/scenarios/main/full-20260317T023702Z.json5",
+  "run_url": "https://github.com/guacsec/trustify-scale-test-runs/actions/runs/36551914612"
+}
