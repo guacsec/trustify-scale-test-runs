@@ -1,0 +1,11 @@
+{
+  "kind": "pull-request",
+  "pr": "2735",
+  "pr_url": "https://github.com/guacsec/trustify/pull/2735",
+  "branch": "slow_endpoints_deux",
+  "commit": "16954cacd841cb4ef712128b9cf2c540ab99d788",
+  "commit_url": "https://github.com/rh-jfuller/trustify/commit/16954cacd841cb4ef712128b9cf2c540ab99d788",
+  "dataset": "scale-20260317T023702Z",
+  "scenario": "etc/scenarios/main/full-20260317T023702Z.json5",
+  "run_url": "https://github.com/guacsec/trustify-scale-test-runs/actions/runs/37226750150"
+}
