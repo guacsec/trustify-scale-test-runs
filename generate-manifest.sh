@@ -4,7 +4,7 @@
 # This should be run after test reports are generated
 # Respects exclusions listed in publish/excluded-reports.txt
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 
 echo "Generating reports manifest..."
 
