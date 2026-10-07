@@ -1,0 +1,11 @@
+{
+  "kind": "pull-request",
+  "pr": "2745",
+  "pr_url": "https://github.com/guacsec/trustify/pull/2745",
+  "branch": "feature/sea-orm-2.x_1",
+  "commit": "0db05dc007d752b693ed4ae2f1ef8369e1eb09d8",
+  "commit_url": "https://github.com/ctron/trustify/commit/0db05dc007d752b693ed4ae2f1ef8369e1eb09d8",
+  "dataset": "scale-20260317T023702Z",
+  "scenario": "etc/scenarios/main/full-20260317T023702Z.json5",
+  "run_url": "https://github.com/guacsec/trustify-scale-test-runs/actions/runs/37641791997"
+}
