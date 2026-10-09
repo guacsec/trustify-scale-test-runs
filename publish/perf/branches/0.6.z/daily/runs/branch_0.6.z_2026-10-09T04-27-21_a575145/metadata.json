@@ -1,0 +1,10 @@
+{
+  "kind": "branch-daily",
+  "branch": "release/0.6.z",
+  "branch_slug": "0.6.z",
+  "commit": "a575145e4aeca232ac2200d6fefd5d893288ab78",
+  "commit_url": "https://github.com/guacsec/trustify/commit/a575145e4aeca232ac2200d6fefd5d893288ab78",
+  "dataset": "scale-20260317T023702Z",
+  "scenario": "etc/scenarios/main/full-20260317T023702Z.json5",
+  "run_url": "https://github.com/guacsec/trustify-scale-test-runs/actions/runs/37882791842"
+}
