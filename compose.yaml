@@ -42,6 +42,7 @@ services:
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
       - KC_BOOTSTRAP_ADMIN_PASSWORD=admin123456
       - KC_HEALTH_ENABLED=true
+      - JAVA_OPTS_KC_HEAP=-XX:MaxRAMPercentage=50 -XX:MinRAMPercentage=50 -XX:InitialRAMPercentage=25
     ports:
       - "8090:8080"
       - "9000:9000"
@@ -50,7 +51,7 @@ services:
         reservations:
           memory: 512M
         limits:
-          memory: 1G
+          memory: 2G
     healthcheck:
       test:
         - "CMD-SHELL"
