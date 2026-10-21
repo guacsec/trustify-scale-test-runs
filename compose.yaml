@@ -18,6 +18,8 @@ services:
     environment:
       POSTGRES_PASSWORD: "eggs"
       POSTGRES_DB: "trustify"
+    volumes:
+      - trustify-db:/var/lib/postgresql/data
     restart: always
     shm_size: 1G
     deploy:
@@ -289,5 +291,6 @@ services:
           --scenarios RestAPIUser,RestAPIUserSlow,RestAPIUserDelete
 
 volumes:
+  trustify-db:
   trustify-data:
   trustify-cache:
