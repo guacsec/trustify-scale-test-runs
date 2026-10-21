@@ -4,6 +4,17 @@ on:
   schedule:
     - cron: "0 4 * * *"
   workflow_dispatch:
+    inputs:
+      dataset:
+        description: "full or a ZIP under etc/datasets (e.g. etc/datasets/ds3.zip)"
+        type: string
+        default: full
+        required: true
+      duration:
+        description: Locust duration (use 1m for a quick runner check)
+        type: string
+        default: 10m
+        required: true
 
 permissions:
   contents: read
@@ -23,9 +34,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH: ${{ matrix.branch }}
+          DATASET: ${{ inputs.dataset || 'full' }}
+          DURATION: ${{ inputs.duration || '10m' }}
         run: >-
           gh workflow run trustify-perf.yaml
           --repo guacsec/trustify-scale-test-runs
           --ref main
           --field mode=branch
           --field branch="$BRANCH"
+          --field dataset="$DATASET"
+          --field duration="$DURATION"

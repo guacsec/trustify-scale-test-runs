@@ -31,6 +31,16 @@ on:
         description: Trustify branch to test (branch mode)
         type: string
         required: false
+      dataset:
+        description: "full or a ZIP under etc/datasets (e.g. etc/datasets/ds3.zip)"
+        type: string
+        default: full
+        required: true
+      duration:
+        description: Locust duration (use 1m for a quick runner check)
+        type: string
+        default: 10m
+        required: true
 
 permissions:
   contents: read
@@ -42,6 +52,10 @@ concurrency:
 jobs:
   run:
     if: github.event_name == 'schedule' || inputs.mode == 'daily' || inputs.mode == 'branch' || inputs.mode == 'pr'
+    env:
+      DATASET: ${{ inputs.dataset || 'full' }}
+      DURATION: ${{ inputs.duration || '10m' }}
+      COMPOSE_PROJECT_NAME: ${{ (inputs.dataset || 'full') == 'full' && 'scale' || 'scale-dataset' }}
     runs-on:
       group: perf
     timeout-minutes: 180
@@ -71,6 +85,36 @@ jobs:
           test -n "$BRANCH" || { echo "branch is required in branch mode"; exit 1; }
           git check-ref-format --branch "$BRANCH"
 
+      - name: Check dataset and duration inputs
+        id: inputs
+        env:
+          DATASET: ${{ env.DATASET }}
+          DURATION: ${{ env.DURATION }}
+        run: |
+          if [[ ! "$DURATION" =~ ^[1-9][0-9]*[smhd]$ ]]; then
+            echo "Duration must look like 30s, 1m, or 2h" >&2
+            exit 1
+          fi
+
+          dataset_file=
+          dataset_label="scale-20260317T023702Z"
+          if [[ "$DATASET" != full ]]; then
+            case "$DATASET" in
+              etc/datasets/*.zip) dataset_file="${DATASET#etc/datasets/}" ;;
+              *.zip) dataset_file="$DATASET" ;;
+              *) echo "Dataset must be 'full' or a ZIP in etc/datasets/" >&2; exit 1 ;;
+            esac
+            if [[ ! "$dataset_file" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*\.zip$ ]]; then
+              echo "Dataset ZIP must be a simple filename under etc/datasets/" >&2
+              exit 1
+            fi
+            dataset_label="$dataset_file"
+          fi
+          {
+            echo "dataset_file=$dataset_file"
+            echo "dataset_label=$dataset_label"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Check out scale-test-runs
         uses: actions/checkout@v6
         with:
@@ -93,6 +137,39 @@ jobs:
             if [ -n "$path" ]; then sudo rm -rf "$path"; fi
           done
 
+      - name: Prepare ZIP dataset
+        if: env.DATASET != 'full'
+        env:
+          DATASET_FILE: ${{ steps.inputs.outputs.dataset_file }}
+        run: |
+          zip_path="$GITHUB_WORKSPACE/trustify/etc/datasets/$DATASET_FILE"
+          if [ -f "$zip_path" ]; then
+            exit 0
+          fi
+
+          source_dir="${zip_path%.zip}"
+          if [ ! -d "$source_dir" ]; then
+            echo "Dataset ZIP and source directory not found: $zip_path" >&2
+            exit 1
+          fi
+
+          docker run --rm \
+            --volume "$GITHUB_WORKSPACE/trustify:/trustify" \
+            --env DATASET_FILE \
+            python:3.13-slim python -c '
+          import os
+          from pathlib import Path
+          from zipfile import ZIP_DEFLATED, ZipFile
+
+          root = Path("/trustify/etc/datasets")
+          source = root / Path(os.environ["DATASET_FILE"]).stem
+          target = root / os.environ["DATASET_FILE"]
+          with ZipFile(target, "w", ZIP_DEFLATED) as archive:
+              for path in source.rglob("*"):
+                  if path.is_file():
+                      archive.write(path, path.relative_to(source))
+          '
+
       - name: Set run metadata
         id: meta
         env:
@@ -100,6 +177,7 @@ jobs:
           SOURCE_SHA: ${{ inputs.source_sha }}
           PR_NUMBER: ${{ inputs.pr_number }}
           BRANCH: ${{ inputs.branch }}
+          DATASET_LABEL: ${{ steps.inputs.outputs.dataset_label }}
         run: |
           source_sha=${SOURCE_SHA:-$(git -C trustify rev-parse HEAD)}
           short_sha=${source_sha:0:7}
@@ -127,6 +205,7 @@ jobs:
             echo "run_dir=$run_dir"
             echo "publish_dir=$publish_dir"
             echo "branch_slug=$branch_slug"
+            echo "dataset=$DATASET_LABEL"
           } >> "$GITHUB_OUTPUT"
 
       - name: Build scale stack
@@ -140,7 +219,20 @@ jobs:
 
       - name: Start scale stack
         working-directory: scale
-        run: docker compose -f compose.yaml up -d --wait trustify
+        run: |
+          docker compose -f compose.yaml down --remove-orphans
+          for volume in trustify-db trustify-data; do
+            docker volume rm "${COMPOSE_PROJECT_NAME}_${volume}" 2>/dev/null || true
+          done
+
+          if [[ "$DATASET" == full ]]; then
+            docker compose -f compose.yaml up -d --wait trustify
+          else
+            docker compose -f compose.yaml up -d --wait postgres keycloak
+            docker compose -f compose.yaml run --rm --no-deps init-keycloak
+            docker compose -f compose.yaml run --rm --no-deps trustify-migrate
+            docker compose -f compose.yaml up -d --no-deps --wait trustify
+          fi
 
       - name: Run Locust
         working-directory: trustify/tools/perf
@@ -148,6 +240,10 @@ jobs:
           RUN_MODE: ${{ steps.meta.outputs.mode }}
           RUN_DIR: ${{ steps.meta.outputs.run_dir }}
           BRANCH_SLUG: ${{ steps.meta.outputs.branch_slug }}
+          DATASET: ${{ env.DATASET }}
+          DATASET_FILE: ${{ steps.inputs.outputs.dataset_file }}
+          DATASET_LABEL: ${{ steps.meta.outputs.dataset }}
+          DURATION: ${{ env.DURATION }}
           SOURCE_REPOSITORY: ${{ inputs.source_repository || 'guacsec/trustify' }}
           SOURCE_REF: ${{ inputs.mode == 'branch' && inputs.branch || inputs.source_ref || 'main' }}
           SOURCE_SHA: ${{ inputs.source_sha }}
@@ -156,7 +252,22 @@ jobs:
           CLIENT_ID: walker
           # Matches the local-only dummy credential in scale/compose.yaml.
           CLIENT_SECRET: R8A6KFeyxJsMDBhjfHbpZTIF0GWt43HP
-          TOOLS_PERF_SCENARIO_FILE: etc/scenarios/main/full-20260317T023702Z.json5
+          TOOLS_PERF_SCENARIO_FILE: ${{ env.DATASET == 'full' && 'etc/scenarios/main/full-20260317T023702Z.json5' || '' }}
+          DATASET_UPLOAD_SCRIPT: |
+            import os
+            import requests
+            from auth import create_provider
+
+            token = create_provider().get_token()
+            with open("/dataset.zip", "rb") as dataset:
+                response = requests.post(
+                    "http://trustify:8080/api/v3/dataset",
+                    headers={"Authorization": f"Bearer {token}", "Content-Type": "application/zip"},
+                    data=dataset,
+                    timeout=1800,
+                )
+            response.raise_for_status()
+            print(f"Imported {os.environ['DATASET_LABEL']}")
           TOOLS_PERF_WAIT_TIME_FROM: "0"
           TOOLS_PERF_WAIT_TIME_TO: "0"
         run: |
@@ -166,13 +277,21 @@ jobs:
           test -n "$network" || { echo "Could not find the Trustify Compose network"; exit 1; }
 
           run_locust() {
+            dataset_mount=()
+            if [[ "$DATASET" != full ]]; then
+              dataset_mount=(--volume "$GITHUB_WORKSPACE/trustify/etc/datasets/$DATASET_FILE:/dataset.zip:ro")
+            fi
             docker run --rm \
               --network "$network" \
               --volume "$GITHUB_WORKSPACE/trustify/tools/perf:/perf" \
+              "${dataset_mount[@]}" \
               --workdir /perf \
               --env ISSUER_URL \
               --env CLIENT_ID \
               --env CLIENT_SECRET \
+              --env DATASET \
+              --env DATASET_LABEL \
+              --env DATASET_UPLOAD_SCRIPT \
               --env TOOLS_PERF_SCENARIO_FILE \
               --env TOOLS_PERF_WAIT_TIME_FROM \
               --env TOOLS_PERF_WAIT_TIME_TO \
@@ -180,6 +299,9 @@ jobs:
               sh -ec '
                 pip install --disable-pip-version-check --no-cache-dir "locust==2.37.5" "json5==0.12.0"
                 python -c "from auth import create_provider; import requests; token = create_provider().get_token(); response = requests.get(\"http://trustify:8080/api/v3/importer?total=true\", headers={\"Authorization\": f\"Bearer {token}\"}, timeout=30); response.raise_for_status(); print(\"OIDC authentication preflight passed\")"
+                if [ "$DATASET" != full ]; then
+                  python -c "$DATASET_UPLOAD_SCRIPT"
+                fi
                 exec locust "$@"
               ' locust "$@"
           }
@@ -194,14 +316,14 @@ jobs:
               --arg branch "$SOURCE_REF" \
               --arg commit "$source_sha" \
               --arg commit_url "https://github.com/$SOURCE_REPOSITORY/commit/$source_sha" \
-              --arg dataset scale-20260317T023702Z \
+              --arg dataset "$DATASET_LABEL" \
               --arg scenario "$TOOLS_PERF_SCENARIO_FILE" \
               --arg run_url "$run_url" \
               '{kind: $kind, pr: $pr, pr_url: $pr_url, branch: $branch, commit: $commit, commit_url: $commit_url, dataset: $dataset, scenario: $scenario, run_url: $run_url}' \
               > out/metadata.json
             run_locust \
               --host http://trustify:8080 \
-              -u 10 -r 2 -t 10m \
+              -u 10 -r 2 -t "$DURATION" \
               --headless \
               --html=out/report.html \
               --csv=out/results \
@@ -213,14 +335,14 @@ jobs:
               --arg branch_slug "$BRANCH_SLUG" \
               --arg commit "$source_sha" \
               --arg commit_url "https://github.com/guacsec/trustify/commit/$source_sha" \
-              --arg dataset scale-20260317T023702Z \
+              --arg dataset "$DATASET_LABEL" \
               --arg scenario "$TOOLS_PERF_SCENARIO_FILE" \
               --arg run_url "$run_url" \
               '{kind: $kind, branch: $branch, branch_slug: $branch_slug, commit: $commit, commit_url: $commit_url, dataset: $dataset, scenario: $scenario, run_url: $run_url}' \
               > out/metadata.json
             run_locust \
               --host http://trustify:8080 \
-              -u 10 -r 2 -t 10m \
+              -u 10 -r 2 -t "$DURATION" \
               --headless \
               --html=out/report.html \
               --csv=out/results \
@@ -229,7 +351,7 @@ jobs:
           else
             jq -n \
               --arg kind daily \
-              --arg dataset scale-20260317T023702Z \
+              --arg dataset "$DATASET_LABEL" \
               --arg scenario "$TOOLS_PERF_SCENARIO_FILE" \
               --arg branch main \
               --arg commit "$source_sha" \
@@ -239,7 +361,7 @@ jobs:
               > out/metadata.json
             run_locust \
               --host http://trustify:8080 \
-              -u 10 -r 2 -t 10m \
+              -u 10 -r 2 -t "$DURATION" \
               --headless \
               --html=out/report.html \
               --csv=out/results \
@@ -255,7 +377,11 @@ jobs:
       - name: Stop scale stack
         if: always()
         working-directory: scale
-        run: docker compose -f compose.yaml down --remove-orphans
+        run: |
+          docker compose -f compose.yaml down --remove-orphans || true
+          for volume in trustify-db trustify-data; do
+            docker volume rm "${COMPOSE_PROJECT_NAME}_${volume}" 2>/dev/null || true
+          done
 
       - name: Upload Locust results
         if: always()
