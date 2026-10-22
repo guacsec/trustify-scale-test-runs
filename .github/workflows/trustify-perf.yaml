@@ -48,6 +48,7 @@ permissions:
 concurrency:
   group: run
   cancel-in-progress: false
+  queue: max
 
 jobs:
   run:
@@ -233,6 +234,12 @@ jobs:
             docker compose -f compose.yaml run --rm --no-deps trustify-migrate
             docker compose -f compose.yaml up -d --no-deps --wait trustify
           fi
+
+      - name: Vacuum and analyze after migrations
+        working-directory: scale
+        run: |
+          docker compose -f compose.yaml exec -T postgres psql \
+            -U postgres -d trustify -v ON_ERROR_STOP=1 -c 'VACUUM ANALYZE;'
 
       - name: Run Locust
         working-directory: trustify/tools/perf
