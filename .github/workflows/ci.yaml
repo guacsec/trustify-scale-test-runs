@@ -20,7 +20,10 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Lint workflows
-        run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.7 -no-color
+        # actionlint does not yet recognize GitHub Actions' concurrency.queue key.
+        run: |
+          docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.7 -no-color \
+            -ignore 'unexpected key "queue" for "concurrency" section'
 
       - name: Lint shell scripts
         run: git ls-files -z '*.sh' | xargs -0 shellcheck -S warning
