@@ -10,6 +10,11 @@ on:
         type: string
         default: full
         required: true
+      dump:
+        description: "Full dataset dump (e.g. scale-20261030T081751Z; used when dataset is full)"
+        type: string
+        default: scale-20260317T023702Z
+        required: true
       duration:
         description: Locust duration (use 1m for a quick runner check)
         type: string
@@ -35,6 +40,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           BRANCH: ${{ matrix.branch }}
           DATASET: ${{ inputs.dataset || 'full' }}
+          DUMP: ${{ inputs.dump || 'scale-20260317T023702Z' }}
           DURATION: ${{ inputs.duration || '10m' }}
         run: >-
           gh workflow run trustify-perf.yaml
@@ -43,4 +49,5 @@ jobs:
           --field mode=branch
           --field branch="$BRANCH"
           --field dataset="$DATASET"
+          --field dump="$DUMP"
           --field duration="$DURATION"
