@@ -36,6 +36,11 @@ on:
         type: string
         default: full
         required: true
+      dump:
+        description: "Full dataset dump (e.g. scale-20261030T081751Z; used when dataset is full)"
+        type: string
+        default: scale-20260317T023702Z
+        required: true
       duration:
         description: Locust duration (use 1m for a quick runner check)
         type: string
@@ -90,6 +95,7 @@ jobs:
         id: inputs
         env:
           DATASET: ${{ env.DATASET }}
+          DUMP_LABEL: ${{ inputs.dump || 'scale-20260317T023702Z' }}
           DURATION: ${{ env.DURATION }}
         run: |
           if [[ ! "$DURATION" =~ ^[1-9][0-9]*[smhd]$ ]]; then
@@ -98,7 +104,9 @@ jobs:
           fi
 
           dataset_file=
-          dataset_label="scale-20260317T023702Z"
+          dataset_label="$DUMP_LABEL"
+          dump_timestamp=
+          scenario_file=
           if [[ "$DATASET" != full ]]; then
             case "$DATASET" in
               etc/datasets/*.zip) dataset_file="${DATASET#etc/datasets/}" ;;
@@ -110,10 +118,19 @@ jobs:
               exit 1
             fi
             dataset_label="$dataset_file"
+          else
+            if [[ ! "$DUMP_LABEL" =~ ^scale-([0-9]{8}T[0-9]{6}Z)$ ]]; then
+              echo "Full dump must look like scale-20261030T081751Z" >&2
+              exit 1
+            fi
+            dump_timestamp="${BASH_REMATCH[1]%Z}"
+            scenario_file="etc/scenarios/main/full-${BASH_REMATCH[1]}.json5"
           fi
           {
             echo "dataset_file=$dataset_file"
             echo "dataset_label=$dataset_label"
+            echo "dump_timestamp=$dump_timestamp"
+            echo "scenario_file=$scenario_file"
           } >> "$GITHUB_OUTPUT"
 
       - name: Check out scale-test-runs
@@ -128,6 +145,16 @@ jobs:
           ref: ${{ inputs.mode == 'branch' && inputs.branch || inputs.source_sha || 'main' }}
           path: trustify
           persist-credentials: false
+
+      - name: Check full dump scenario
+        if: env.DATASET == 'full'
+        env:
+          SCENARIO_FILE: ${{ steps.inputs.outputs.scenario_file }}
+        run: |
+          if [ ! -f "trustify/tools/perf/$SCENARIO_FILE" ]; then
+            echo "Scenario file for the selected full dump was not found: $SCENARIO_FILE" >&2
+            exit 1
+          fi
 
       - name: Maximize build space
         if: runner.environment == 'github-hosted'
@@ -220,6 +247,8 @@ jobs:
 
       - name: Start scale stack
         working-directory: scale
+        env:
+          DUMP_TIMESTAMP: ${{ steps.inputs.outputs.dump_timestamp }}
         run: |
           docker compose -f compose.yaml down --remove-orphans
           for volume in trustify-db trustify-data; do
@@ -259,7 +288,7 @@ jobs:
           CLIENT_ID: walker
           # Matches the local-only dummy credential in scale/compose.yaml.
           CLIENT_SECRET: R8A6KFeyxJsMDBhjfHbpZTIF0GWt43HP
-          TOOLS_PERF_SCENARIO_FILE: ${{ env.DATASET == 'full' && 'etc/scenarios/main/full-20260317T023702Z.json5' || '' }}
+          TOOLS_PERF_SCENARIO_FILE: ${{ steps.inputs.outputs.scenario_file }}
           DATASET_UPLOAD_SCRIPT: |
             import os
             import requests

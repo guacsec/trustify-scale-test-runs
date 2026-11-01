@@ -61,9 +61,11 @@ be published for inspection. PR runs retain Locust's error exit status.
 ### Datasets
 
 - **`full` (default):** restores the database and storage snapshot
-  `20260317T023702Z` from the Trustify dump bucket. Locust uses
-  `tools/perf/etc/scenarios/main/full-20260317T023702Z.json5` in the Trustify
-  checkout for snapshot-specific IDs.
+  `20260317T023702Z` from the Trustify dump bucket. Set the workflow's `dump`
+  input to another `scale-<timestamp>Z` value to select a different full dump;
+  Locust uses its matching
+  `tools/perf/etc/scenarios/main/full-<timestamp>Z.json5` scenario file from the
+  Trustify checkout.
 - **Dataset ZIP:** accepts a ZIP filename such as `ds3.zip`, or
   `etc/datasets/ds3.zip`, from the selected Trustify checkout. The workflow starts
   with an empty database, applies migrations, and uploads the ZIP through
@@ -86,6 +88,10 @@ gh workflow run trustify-perf.yaml --repo guacsec/trustify-scale-test-runs \
 # Short run with a smaller dataset
 gh workflow run trustify-perf.yaml --repo guacsec/trustify-scale-test-runs \
   --ref main -f mode=daily -f dataset=etc/datasets/ds3.zip -f duration=1m
+
+# Use a specific full dump
+gh workflow run trustify-perf.yaml --repo guacsec/trustify-scale-test-runs \
+  --ref main -f mode=daily -f dataset=full -f dump=scale-20261030T081751Z
 ```
 
 `duration` must be a positive integer followed by `s`, `m`, `h`, or `d`, such as
