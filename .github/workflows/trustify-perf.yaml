@@ -338,7 +338,7 @@ jobs:
                 if [ "$DATASET" != full ]; then
                   python -c "$DATASET_UPLOAD_SCRIPT"
                 fi
-                exec locust --exclude-tags correlation "$@"
+                exec locust "$@"
               ' locust "$@"
           }
 
