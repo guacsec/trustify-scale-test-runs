@@ -1,0 +1,11 @@
+{
+  "kind": "pull-request",
+  "pr": "2858",
+  "pr_url": "https://github.com/guacsec/trustify/pull/2858",
+  "branch": "vuln-sbom-perf",
+  "commit": "e0e4a744bce90a9ec835f82107600f45199b2ab7",
+  "commit_url": "https://github.com/rh-jfuller/trustify/commit/e0e4a744bce90a9ec835f82107600f45199b2ab7",
+  "dataset": "scale-20260317T023702Z",
+  "scenario": "etc/scenarios/main/full-20260317T023702Z.json5",
+  "run_url": "https://github.com/guacsec/trustify-scale-test-runs/actions/runs/42612812850"
+}
