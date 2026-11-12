@@ -1,0 +1,11 @@
+{
+  "kind": "pull-request",
+  "pr": "2877",
+  "pr_url": "https://github.com/guacsec/trustify/pull/2877",
+  "branch": "TC-4343",
+  "commit": "c6f6a0049ea9bf4df58a7917ff46226345b7b39c",
+  "commit_url": "https://github.com/helio-frota/trustify/commit/c6f6a0049ea9bf4df58a7917ff46226345b7b39c",
+  "dataset": "scale-20260317T023702Z",
+  "scenario": "etc/scenarios/main/full-20260317T023702Z.json5",
+  "run_url": "https://github.com/guacsec/trustify-scale-test-runs/actions/runs/43286473585"
+}
