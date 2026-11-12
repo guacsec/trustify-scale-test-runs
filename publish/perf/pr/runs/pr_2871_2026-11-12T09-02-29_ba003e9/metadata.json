@@ -1,0 +1,11 @@
+{
+  "kind": "pull-request",
+  "pr": "2871",
+  "pr_url": "https://github.com/guacsec/trustify/pull/2871",
+  "branch": "TC-7488",
+  "commit": "ba003e927eac656593d325c9d1eb1677882d5f66",
+  "commit_url": "https://github.com/ruromero/trustify/commit/ba003e927eac656593d325c9d1eb1677882d5f66",
+  "dataset": "scale-20260317T023702Z",
+  "scenario": "etc/scenarios/main/full-20260317T023702Z.json5",
+  "run_url": "https://github.com/guacsec/trustify-scale-test-runs/actions/runs/43187701634"
+}
