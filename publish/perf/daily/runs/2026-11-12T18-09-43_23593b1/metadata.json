@@ -1,0 +1,9 @@
+{
+  "kind": "daily",
+  "dataset": "scale-20260317T023702Z",
+  "scenario": "etc/scenarios/main/full-20260317T023702Z.json5",
+  "branch": "main",
+  "commit": "23593b1ec881e2db4d58e75fb39a1e5da31ba59a",
+  "commit_url": "https://github.com/guacsec/trustify/commit/23593b1ec881e2db4d58e75fb39a1e5da31ba59a",
+  "run_url": "https://github.com/guacsec/trustify-scale-test-runs/actions/runs/43276370559"
+}
