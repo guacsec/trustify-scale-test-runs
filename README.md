@@ -145,7 +145,7 @@ docker run --rm \
   --env TOOLS_PERF_WAIT_TIME_FROM=0 \
   --env TOOLS_PERF_WAIT_TIME_TO=0 \
   python:3.13-slim sh -ec '
-    pip install --disable-pip-version-check --no-cache-dir "locust==2.37.5" "json5==0.12.0"
+    pip install --disable-pip-version-check --no-cache-dir "locust==2.37.5" "json5==0.12.0" "urllib3[zstd]"
     mkdir -p out
     exec locust --host http://trustify:8080 -u 10 -r 2 -t 10m --headless \
       --html=out/report.html --csv=out/results --csv-full-history
