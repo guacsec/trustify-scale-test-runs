@@ -333,7 +333,7 @@ jobs:
               --env TOOLS_PERF_WAIT_TIME_TO \
               python:3.13-slim \
               sh -ec '
-                pip install --disable-pip-version-check --no-cache-dir "locust==2.37.5" "json5==0.12.0"
+                pip install --disable-pip-version-check --no-cache-dir "locust==2.37.5" "json5==0.12.0" "urllib3[zstd]"
                 python -c "from auth import create_provider; import requests; token = create_provider().get_token(); response = requests.get(\"http://trustify:8080/api/v3/importer?total=true\", headers={\"Authorization\": f\"Bearer {token}\"}, timeout=30); response.raise_for_status(); print(\"OIDC authentication preflight passed\")"
                 if [ "$DATASET" != full ]; then
                   python -c "$DATASET_UPLOAD_SCRIPT"
