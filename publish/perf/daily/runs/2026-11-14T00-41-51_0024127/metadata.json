@@ -1,0 +1,9 @@
+{
+  "kind": "daily",
+  "dataset": "ds3.zip",
+  "scenario": "",
+  "branch": "main",
+  "commit": "0024127838366fc0621c0d253f617a418b0cecfb",
+  "commit_url": "https://github.com/guacsec/trustify/commit/0024127838366fc0621c0d253f617a418b0cecfb",
+  "run_url": "https://github.com/guacsec/trustify-scale-test-runs/actions/runs/43535717316"
+}
