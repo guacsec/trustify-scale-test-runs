@@ -62,8 +62,7 @@ jobs:
       DATASET: ${{ inputs.dataset || 'full' }}
       DURATION: ${{ inputs.duration || '10m' }}
       COMPOSE_PROJECT_NAME: ${{ (inputs.dataset || 'full') == 'full' && 'scale' || 'scale-dataset' }}
-    runs-on:
-      group: perf
+    runs-on: ubuntu-24.04
     timeout-minutes: 360
     permissions:
       contents: read
