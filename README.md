@@ -33,8 +33,8 @@ The [performance workflow](.github/workflows/trustify-perf.yaml):
 
 The defaults are **10 concurrent users**, a **spawn rate of 2 users/second**, a
 **10-minute duration**, and **no wait between requests**. CI currently installs
-Locust `2.37.5` and json5 `0.12.0`. Performance runs use the self-hosted runner
-group `perf` and are queued to avoid overlapping runs.
+Locust `2.37.5` and json5 `0.12.0`. Performance runs use GitHub-hosted
+`ubuntu-24.04` runners and are queued to avoid overlapping runs.
 
 ### Run modes
 
